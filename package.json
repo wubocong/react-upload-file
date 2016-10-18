@@ -1,0 +1,57 @@
+{
+  "name": "react-upload",
+  "version": "1.0.0-alpha.1",
+  "description": "Upload files async with xhr2 or iframe for IE. Supporting IE8+.",
+  "main": "dist/index.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:test": "cross-env NODE_ENV=production node -r babel-register compile.js",
+    "build": "webpack",
+    "build:watch": "npm run build -- -w",
+    "start": "npm run build:watch"
+  },
+  "keywords": [
+    "upload",
+    "react",
+    "file",
+    "ajax",
+    "xhr",
+    "async",
+    "react-component"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wubocong/react-upload.git"
+  },
+  "author": "Warrior!",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^15.3.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-eslint": "^7.0.0",
+    "babel-loader": "^6.2.5",
+    "babel-register": "^6.16.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-es2015-destructuring": "^6.16.0",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-optimize": "^1.0.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "cross-env": "^3.1.3",
+    "es5-shim": "^4.5.9",
+    "eslint": "^3.8.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-import-resolver-webpack": "^0.6.0",
+    "eslint-plugin-import": "1.16.0",
+    "eslint-plugin-prefer-object-spread": "^1.1.0",
+    "eslint-plugin-react": "^6.4.1",
+    "jsx-loader": "^0.13.2",
+    "webpack": "^1.13.2"
+  },
+  "bugs": {
+    "url": "https://github.com/wubocong/react-upload.git"
+  }
+}
