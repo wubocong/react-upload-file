@@ -1,11 +1,11 @@
-# React-FileUpload #
+# ReactUploadFile #
 
-![npm version](https://badge.fury.io/js/react-fileupload.svg)
+![npm version](https://badge.fury.io/js/react-upload-file.svg)
 
 ## Index ##
 
 
-### EN ###
+### Catalog ###
 * [Introduce](#introduce)
 * [Download](#download)
 * [API](#api-en)
@@ -30,7 +30,7 @@
 
 ### Get started ###
 ```
-const FileUpload = require('react-fileupload');
+const ReactUploadFile = require('react-upload-file');
 ...
 render(){
 	/*set properties*/
@@ -40,19 +40,19 @@ render(){
 			fid:0
 		}
 	}
-	/*Use FileUpload with options*/
+	/*Use ReactUploadFile with options*/
 	/*Set two dom with ref*/
 	return (
-		<FileUpload options={options}>
+		<ReactUploadFile options={options}>
 			<button ref="chooseBtn">choose</button>
 			<button ref="uploadBtn">upload</button>
-		</FileUpload>
+		</ReactUploadFile>
 	)	        
 }
 ```
 
 ## Download ##
-`npm install react-fileupload --save`
+`npm install react-upload-file --save`
 
 ## API-EN ##
 
@@ -63,7 +63,7 @@ options:{
     ...
 }
 ```
-`options` is an attribute of `<FileUpload />`. The properties of `options` are: 
+`options` is an attribute of `<ReactUploadFile />`. The properties of `options` are: 
 
 name | type | default | note
 ------------ | ------------- | ------------ | ------------
@@ -77,7 +77,7 @@ timeout | number | ``0`` | Timeout of the request, not support IE9- right now, w
 paramAddToField | object/func | ``undefined`` | Key-value that need to add to  formData. When it is a function, use the return.
 accept | string | ``''`` | Limit the type (extension) of file.
 multiple | boolean | ``false`` | Allow multi-upload or not. Not supporting IE9-.
-numberLimit | number/func | false | Limit how much file that user can choose in multi-upload case.User can still choose but FileUpload will filter.
+numberLimit | number/func | false | Limit how much file that user can choose in multi-upload case.User can still choose but ReactUploadFile will filter.
 fileFieldName | string/func | false | When a file is added to formData, defaulting file name as key. When is a string, use it. And When is a func, use return value. Func will receive the File object as argument.
 withCredentials | boolean | false | Same as `xhr.withCredentials`.
 requestHeaders | object | false | Key-values that will be set using  `xhr.setRequestHeader(key, value)`.
@@ -164,9 +164,9 @@ make this true to add text fields before file data.
 #### tag ####
 {string}
 
-Multi form groups are required in IE. If there are multi-use of `<FileUpload>` in one page, use tag to distinguish them.
+Multi form groups are required in IE. If there are multi-use of `<ReactUploadFile>` in one page, use tag to distinguish them.
 
-#### _withoutFileUpload ####
+#### _withoutReactUploadFile ####
 {boolean}
 
 Send AJAX without the file(without the FormData).
@@ -187,22 +187,22 @@ IF there is file(File instance) that need to be uploaded immediately, it can be 
 
 You can just set two btns.
 ```
-<FileUpload options={options}>
+<ReactUploadFile options={options}>
 	<button ref="chooseBtn">choose</button>
 	<button ref="uploadBtn">upload<button>
-</FileUpload>
+</ReactUploadFile>
 ```
 
 Or if you set the `chooseAndUpload` to true, you need to set only one with `ref="chooseAndUpload"`.
 ```
-<FileUpload options={options}>
+<ReactUploadFile options={options}>
     <button ref="chooseAndUpload">chooseAndUpload</button>
-</FileUpload>
+</ReactUploadFile>
 ```
 
 Other DOMs can also be set as children.
 ```
-<FileUpload options={options}>
+<ReactUploadFile options={options}>
     <h3>Please choose</h3>
     <div ref="chooseBtn">
         <i className="icon icon-upload" />
@@ -211,7 +211,7 @@ Other DOMs can also be set as children.
     <p>You have uploaded {this.state.rate}</p>
     <button ref="uploadBtn">upload<button>
     <p>Thanks for using</p>
-</FileUpload>
+</ReactUploadFile>
 ```
 
 
@@ -225,8 +225,8 @@ componentDidUpdate(){
 
 render(){
     return(){
-        <FileUpload ref="File-Upload" options={...}>
-        </FileUpload>
+        <ReactUploadFile ref="File-Upload" options={...}>
+        </ReactUploadFile>
     }
 }
 ```
@@ -257,7 +257,7 @@ If you have better and clearer demos, plz tell me! Online or offline.
 simple example:
 
 ```
-const FileUpload = require('react-fileupload');
+const ReactUploadFile = require('react-upload-file');
 ...
 render(){
 	/*set properties*/
@@ -267,13 +267,13 @@ render(){
 			fid:0
 		}
 	}
-	/*Use FileUpload with options*/
+	/*Use ReactUploadFile with options*/
 	/*Set two dom with ref*/
 	return (
-		<FileUpload options={options}>
+		<ReactUploadFile options={options}>
 			<button ref="chooseBtn">choose</button>
 			<button ref="uploadBtn">upload</button>
-		</FileUpload>
+		</ReactUploadFile>
 	)	        
 }
 ```
@@ -452,11 +452,11 @@ _handleUploadFailed(err) {
 
 render() {
   return (
-    <FileUpload options={this.uploadOptions} ref="fileUpload">
+    <ReactUploadFile options={this.uploadOptions} ref="fileUpload">
       <div styleName={dashedBoxStyle} ref="chooseAndUpload">
         {plusIcon}
       </div>
-    </FileUpload>
+    </ReactUploadFile>
   )
 }
 ```

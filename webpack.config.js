@@ -7,7 +7,7 @@ const sharedConfig = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    library: 'react-fileupload',
+    library: 'react-upload-file',
     libraryTarget: 'umd'
   },
   module: {
