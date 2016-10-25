@@ -1,12 +1,13 @@
 const path = require('path');
+const webpack = require('webpack');
+const WebpackDevServer = require("webpack-dev-server");
+const port = process.env.PORT || 8010;
 
 const config = {
-  entry: [path.resolve(__dirname, 'test/index.js')],
+  entry: [`webpack-dev-server/client?http://localhost:${port}/`, 'babel-polyfill', path.resolve(__dirname, 'test/index.js')],
   output: {
-    path: path.resolve(__dirname, 'test'),
-    filename: 'bundle.js',
-    library: 'react-upload-file',
-    libraryTarget: 'umd'
+    path: path.resolve(__dirname, 'test/'),
+    filename: 'bundle.js'
   },
   module: {
     loaders: [{
@@ -24,11 +25,16 @@ const config = {
       commonjs: 'react',
       amd: 'react'
     }
-  }
-  ],
+  }],
   resolve: {
-    extensions: ['', '.js']
-  }
+    extensions: ['', '.js', '.jsx', '.json'],
+    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
+  },
 };
 
-module.exports = config;
+const compiler = webpack(config);
+const server = new WebpackDevServer(compiler, {
+  contentBase: path.resolve(__dirname, 'test')
+});
+
+server.listen(port);

@@ -26,11 +26,11 @@ const sharedConfig = {
       commonjs: 'react',
       amd: 'react'
     }
-  }
-  ],
+  }],
   resolve: {
-    extensions: ['', '.js']
-  }
+    extensions: ['', '.js', '.jsx', '.json'],
+    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
+  },
 };
 
 const devBundleConfig = Object.assign({}, sharedConfig, {
