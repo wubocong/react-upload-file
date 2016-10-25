@@ -1,7 +1,7 @@
 {
   "name": "react-upload-file",
-  "version": "1.0.0-beta.1",
-  "description": "Upload files async with xhr2 or iframe for IE. Supporting IE8+.",
+  "version": "1.0.0-beta.2",
+  "description": "Upload files async with xhr2.",
   "main": "dist/index.min.js",
   "scripts": {
     "test": "node webpack.config.test.js",
