@@ -25,9 +25,7 @@ export default class ReactUploadFile extends Component {
       requestHeaders: PropTypes.object,
       accept: PropTypes.string,
       multiple: PropTypes.bool,
-      /* specials*/
       userAgent: PropTypes.string,
-      withoutFileUpload: PropTypes.bool,
       /* funcs*/
       beforeChoose: PropTypes.func,
       onChoose: PropTypes.func,
@@ -47,14 +45,6 @@ export default class ReactUploadFile extends Component {
   };
 
   static defaultProps = {
-    options: {
-      /* basics*/
-      dataType: 'json',
-      timeout: 30000,
-      numberLimit: 10,
-      /* specials*/
-      userAgent: window.navigator.userAgent,
-    },
     /* buttons*/
     chooseFile: <button />,
   };
@@ -63,6 +53,12 @@ export default class ReactUploadFile extends Component {
     super(props);
     const emptyFunction = () => { };
     const options = {
+      dataType: 'json',
+      timeout: 0,
+      numberLimit: 10,
+      userAgent: window.navigator.userAgent,
+      multiple: false,
+      withCredentials: false,
       beforeChoose: emptyFunction,
       onChoose: emptyFunction,
       beforeUpload: emptyFunction,
@@ -75,21 +71,14 @@ export default class ReactUploadFile extends Component {
       ...props.options,
     };
     const timeout = parseInt(options.timeout, 10);
-    options.timeout = (!isNaN(timeout) && timeout > 0) ? timeout : 0;
+    options.timeout = (Number.isInteger(timeout) && timeout > 0) ? timeout : 0;
     const dataType = options.dataType && options.dataType.toLowerCase();
     options.dataType = dataType !== 'json' && 'text';
 
+    /* copy options to instance */
     Object.keys(options).forEach((key) => {
-      this[key] = options[key] || this[key];
+      this[key] = options[key];
     });
-
-    /* manually set files in option. only executed once, deprecated */
-    // if (options.filesToUpload.length) {
-    //   options.filesToUpload.forEach((file) => {
-    //     this.files = [file];
-    //     this.commonUploadFile();
-    //   });
-    // }
   }
 
   state = {
@@ -159,26 +148,24 @@ export default class ReactUploadFile extends Component {
     let formData = new FormData();
     /* If we need to add fields before file data append here*/
     formData = this.appendFieldsToFormData(formData);
-    if (!this.withoutFileUpload) {
-      const fieldNameType = typeof this.fileFieldName;
+    const fieldNameType = typeof this.fileFieldName;
 
-      /* 判断是用什么方式作为formdata item 的 name*/
-      Object.keys(this.files).forEach((key) => {
-        if (key === 'length') return;
+    /* 判断是用什么方式作为formdata item 的 name*/
+    Object.keys(this.files).forEach((key) => {
+      if (key === 'length') return;
 
-        if (fieldNameType === 'function') {
-          const file = this.files[key];
-          const fileFieldName = this.fileFieldName(file);
-          formData.append(fileFieldName, file);
-        } else if (fieldNameType === 'string') {
-          const file = this.files[key];
-          formData.append(this.fileFieldName, file);
-        } else {
-          const file = this.files[key];
-          formData.append(file.name, file);
-        }
-      });
-    }
+      if (fieldNameType === 'function') {
+        const file = this.files[key];
+        const fileFieldName = this.fileFieldName(file);
+        formData.append(fileFieldName, file);
+      } else if (fieldNameType === 'string') {
+        const file = this.files[key];
+        formData.append(this.fileFieldName, file);
+      } else {
+        const file = this.files[key];
+        formData.append(file.name, file);
+      }
+    });
     const baseUrl = this.baseUrl;
 
     /* url参数*/
@@ -255,12 +242,7 @@ export default class ReactUploadFile extends Component {
       this.uploading(progress, mill);
     };
 
-    /* 不带文件上传，给秒传使用 */
-    if (this.withoutFileUpload) {
-      xhr.send(null);
-    } else {
-      xhr.send(formData);
-    }
+    xhr.send(formData);
 
     /* save xhr id */
     const cID = this.state.xhrList.length - 1;
@@ -333,7 +315,6 @@ export default class ReactUploadFile extends Component {
         key="file-button"
       />)]);
     const uploadFileBtn = this.props.uploadFile && React.cloneElement(this.props.uploadFile, { onClick: this.commonUploadFile });
-    console.warn('Render!');
     return (
       <div>
         {chooseFileBtn}

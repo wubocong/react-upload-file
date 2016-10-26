@@ -110,40 +110,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    _this.commonChooseFile = function (e) {
-	      if (typeof _this.beforeChoose === 'function') {
+	      if (e.target.name !== 'ajax-upload-file-input') {
 	        var jud = _this.beforeChoose();
 	        if (jud !== true && jud !== undefined) return;
-	        e.target.click();
-	        // this.refs['ajax-upload-file-input'].click();
+	        e.target.childNodes[0].click();
 	      }
 	    };
 
 	    _this.commonChangeFile = function (e) {
-	      var files = void 0;
-	      if (e.dataTransfer) {
-	        files = e.dataTransfer.files;
-	      } else if (e.target) {
-	        files = e.target.files;
-	      }
-	      // e.persist();
-	      // console.log('common change event');
-	      // console.log(e);
+	      _this.files = e.target.files;
+	      _this.onChoose(_this.files);
 
-	      /* limit the number of files */
-	      var numberLimit = typeof _this.numberLimit === 'function' ? _this.numberLimit() : _this.numberLimit;
-	      if (_this.multiple && numberLimit && files.length > numberLimit) {
-	        (function () {
-	          var newFiles = {};
-	          files.forEach(function (file, i) {
-	            newFiles[i] = file;
-	          });
-	          newFiles.length = numberLimit;
-	          files = newFiles;
-	        })();
-	      }
-	      _this.files = files;
-	      console.log(_this.files);
-	      _this.onChoose(files);
+	      /* immediately upload files */
 	      if (!_this.uploadFile) {
 	        _this.commonUploadFile(e);
 	      }
@@ -152,13 +130,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.commonUploadFile = function (e) {
 	      /* mill参数是当前时刻毫秒数，file第一次进行上传时会添加为file的属性，也可在beforeUpload为其添加，之后同一文件的mill不会更改，作为文件的识别id*/
 	      var mill = _this.files.length && _this.files[0].mill || new Date().getTime();
-	      // strange Filelist, make files array from DOM Filelist
-	      var fileLen = _this.files.length;
-	      var newFiles = [];
+
+	      /* strange Filelist, make files array from DOM Filelist */
+	      /* limit the number of files */
+	      var numberLimit = typeof _this.numberLimit === 'function' ? _this.numberLimit() : _this.numberLimit;
+	      var fileLen = Math.min(_this.files.length, numberLimit);
+	      var files = [];
 	      for (var i = 0; i < fileLen; i++) {
 	        var file = _this.files[i];
 	        // path only appears in electron
-	        newFiles.push({
+	        files.push({
 	          name: file.name,
 	          lastModified: file.lastModified,
 	          lastModifiedDate: file.lastModifiedDate,
@@ -168,13 +149,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          webkitRelativePath: file.webkitRelativePath
 	        });
 	      }
-	      var jud = _this.beforeUpload(newFiles, mill);
+
+	      var jud = _this.beforeUpload(files, mill);
 	      if (jud !== true && jud !== undefined && (typeof jud === 'undefined' ? 'undefined' : _typeof(jud)) !== 'object') {
 	        /* clear input file */
 	        e.target.value = '';
 	        return false;
 	      }
-
 	      if (!_this.files) return;
 	      if (!_this.baseUrl) throw new Error('baseUrl missing in options');
 
@@ -184,28 +165,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var formData = new FormData();
 	      /* If we need to add fields before file data append here*/
 	      formData = _this.appendFieldsToFormData(formData);
-	      if (!_this.withoutFileUpload) {
-	        (function () {
-	          var fieldNameType = _typeof(_this.fileFieldName);
+	      var fieldNameType = _typeof(_this.fileFieldName);
 
-	          /* 判断是用什么方式作为formdata item 的 name*/
-	          Object.keys(_this.files).forEach(function (key) {
-	            if (key === 'length') return;
+	      /* 判断是用什么方式作为formdata item 的 name*/
+	      Object.keys(_this.files).forEach(function (key) {
+	        if (key === 'length') return;
 
-	            if (fieldNameType === 'function') {
-	              var _file = _this.files[key];
-	              var fileFieldName = _this.fileFieldName(_file);
-	              formData.append(fileFieldName, _file);
-	            } else if (fieldNameType === 'string') {
-	              var _file2 = _this.files[key];
-	              formData.append(_this.fileFieldName, _file2);
-	            } else {
-	              var _file3 = _this.files[key];
-	              formData.append(_file3.name, _file3);
-	            }
-	          });
-	        })();
-	      }
+	        if (fieldNameType === 'function') {
+	          var _file = _this.files[key];
+	          var fileFieldName = _this.fileFieldName(_file);
+	          formData.append(fileFieldName, _file);
+	        } else if (fieldNameType === 'string') {
+	          var _file2 = _this.files[key];
+	          formData.append(_this.fileFieldName, _file2);
+	        } else {
+	          var _file3 = _this.files[key];
+	          formData.append(_file3.name, _file3);
+	        }
+	      });
 	      var baseUrl = _this.baseUrl;
 
 	      /* url参数*/
@@ -286,12 +263,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.uploading(progress, mill);
 	      };
 
-	      /* 不带文件上传，给秒传使用 */
-	      if (_this.withoutFileUpload) {
-	        xhr.send(null);
-	      } else {
-	        xhr.send(formData);
-	      }
+	      xhr.send(formData);
 
 	      /* save xhr id */
 	      var cID = _this.state.xhrList.length - 1;
@@ -340,24 +312,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
-	    var options = props.options;
+	    var emptyFunction = function emptyFunction() {};
+	    var options = _extends({
+	      dataType: 'json',
+	      timeout: 0,
+	      numberLimit: 10,
+	      userAgent: window.navigator.userAgent,
+	      multiple: false,
+	      withCredentials: false,
+	      beforeChoose: emptyFunction,
+	      onChoose: emptyFunction,
+	      beforeUpload: emptyFunction,
+	      didUpload: emptyFunction,
+	      uploading: emptyFunction,
+	      uploadSuccess: emptyFunction,
+	      uploadError: emptyFunction,
+	      uploadFail: emptyFunction,
+	      onAbort: emptyFunction
+	    }, props.options);
+	    var timeout = parseInt(options.timeout, 10);
+	    options.timeout = Number.isInteger(timeout) && timeout > 0 ? timeout : 0;
+	    var dataType = options.dataType && options.dataType.toLowerCase();
+	    options.dataType = dataType !== 'json' && 'text';
 
-	    _this.timeout = typeof options.timeout === 'number' && options.timeout > 0 ? options.timeout : 0;
-	    _this.dataType = options.dataType && options.dataType.toLowerCase() === 'text' ? 'text' : _this.dataType;
-
+	    /* copy options to instance */
 	    Object.keys(options).forEach(function (key) {
-	      _this[key] = options[key] || _this[key];
+	      _this[key] = options[key];
 	    });
-
-	    /* manually set files in option. only executed once, deprecated */
-	    if (_this.filesToUpload.length) {
-	      _this.filesToUpload.forEach(function (file) {
-	        _this.files = [file];
-	        _this.commonUploadFile();
-	      });
-	    }
 	    return _this;
 	  }
+
 	  /* trigger input's click*/
 	  /* trigger beforeChoose*/
 
@@ -399,11 +383,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'render',
 	    value: function render() {
 	      var inputProps = { accept: this.props.options.accept, multiple: this.props.options.multiple };
-	      var chooseFileBtn = _react2.default.cloneElement(this.props.chooseFile || _react2.default.createElement('button', null), { onClick: this.commonChooseFile }, [_react2.default.createElement('input', _extends({
+	      var chooseFileBtn = _react2.default.cloneElement(this.props.chooseFile, { onClick: this.commonChooseFile }, [_react2.default.createElement('input', _extends({
 	        type: 'file', name: 'ajax-upload-file-input',
 	        style: { display: 'none' }, onChange: this.commonChangeFile
-	      }, inputProps))]);
-	      var uploadFileBtn = _react2.default.cloneElement(this.props.uploadFile || _react2.default.createElement('button', null), { onClick: this.commonUploadFile });
+	      }, inputProps, {
+	        key: 'file-button'
+	      }))]);
+	      var uploadFileBtn = this.props.uploadFile && _react2.default.cloneElement(this.props.uploadFile, { onClick: this.commonUploadFile });
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -430,10 +416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    requestHeaders: _react.PropTypes.object,
 	    accept: _react.PropTypes.string,
 	    multiple: _react.PropTypes.bool,
-	    /* specials*/
 	    userAgent: _react.PropTypes.string,
-	    withoutFileUpload: _react.PropTypes.bool,
-	    filesToUpload: _react.PropTypes.arrayOf(_react.PropTypes.object),
 	    /* funcs*/
 	    beforeChoose: _react.PropTypes.func,
 	    onChoose: _react.PropTypes.func,
@@ -448,40 +431,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  style: _react.PropTypes.object,
 	  className: _react.PropTypes.string,
 	  /* buttons*/
-	  chooseFile: _react.PropTypes.element,
+	  chooseFile: _react.PropTypes.element.isRequired,
 	  uploadFile: _react.PropTypes.element
 	};
 	ReactUploadFile.defaultProps = {
-	  options: _react.PropTypes.shape({
-	    /* basics*/
-	    param: null,
-	    dataType: 'json',
-	    paramAddToField: null,
-	    timeout: 30000,
-	    numberLimit: 10,
-	    withCredentials: false,
-	    accept: '',
-	    multiple: false,
-	    /* specials*/
-	    userAgent: window.navigator.userAgent,
-	    withoutFileUpload: false,
-	    filesToUpload: [],
-	    /* funcs*/
-	    beforeChoose: null,
-	    onChoose: null,
-	    beforeUpload: null,
-	    didUpload: null,
-	    uploading: null,
-	    uploadSuccess: null,
-	    uploadError: null,
-	    uploadFail: null,
-	    onAbort: null
-	  }).isRequired,
-	  style: _react.PropTypes.object,
-	  className: _react.PropTypes.string,
 	  /* buttons*/
-	  chooseFile: _react.PropTypes.element,
-	  uploadFile: _react.PropTypes.element
+	  chooseFile: _react2.default.createElement('button', null)
 	};
 	exports.default = ReactUploadFile;
 
