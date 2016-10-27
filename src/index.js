@@ -2,12 +2,6 @@
  * Created by Warrior! on 2016/10/18.
  */
 
-/**
- * React文件上传组件，只支持现代浏览器
- * 现代浏览器采用AJAX（XHR2+File API）上传。
- * 使用到ES6，需要经babel转译
- */
-
 import React, { PropTypes, Component } from 'react';
 
 export default class ReactUploadFile extends Component {
@@ -82,7 +76,7 @@ export default class ReactUploadFile extends Component {
   }
 
   state = {
-    /* xhrs' list from upload start*/
+    /* xhrs' list after start uploading files */
     xhrList: [],
     currentXHRID: 0,
   };
@@ -111,7 +105,7 @@ export default class ReactUploadFile extends Component {
 
   /* execute upload */
   commonUploadFile = (e) => {
-    /* mill参数是当前时刻毫秒数，file第一次进行上传时会添加为file的属性，也可在beforeUpload为其添加，之后同一文件的mill不会更改，作为文件的识别id*/
+    /* current timestamp in millisecond for identifying each file */
     const mill = (this.files.length && this.files[0].mill) || (new Date()).getTime();
 
     /* strange Filelist, make files array from DOM Filelist */
@@ -134,23 +128,21 @@ export default class ReactUploadFile extends Component {
     }
 
     const jud = this.beforeUpload(files, mill);
-    if (jud !== true && jud !== undefined && typeof jud !== 'object') {
-      /* clear input file */
+    if (jud !== true && jud !== undefined) {
+      /* clear input's' files */
       e.target.value = '';
       return false;
     }
     if (!this.files) return;
     if (!this.baseUrl) throw new Error('baseUrl missing in options');
 
-    /* 用于存放当前作用域的东西*/
+    /* store info of current scope*/
     const scope = {};
     /* assemble formData object */
     let formData = new FormData();
-    /* If we need to add fields before file data append here*/
+    /* append text fields' param */
     formData = this.appendFieldsToFormData(formData);
     const fieldNameType = typeof this.fileFieldName;
-
-    /* 判断是用什么方式作为formdata item 的 name*/
     Object.keys(this.files).forEach((key) => {
       if (key === 'length') return;
 
@@ -166,10 +158,9 @@ export default class ReactUploadFile extends Component {
         formData.append(file.name, file);
       }
     });
-    const baseUrl = this.baseUrl;
 
-    /* url参数*/
-    /* 如果param是一个函数*/
+    const baseUrl = this.baseUrl;
+    /* url params*/
     const param = typeof this.param === 'function' ? this.param(this.files) : this.param;
 
     let paramStr = '';
@@ -184,13 +175,13 @@ export default class ReactUploadFile extends Component {
     }
     const targeturl = baseUrl + paramStr;
 
-    /* AJAX上传部分*/
+    /* execute ajax upload */
     const xhr = new XMLHttpRequest();
     xhr.open('POST', targeturl, true);
 
-    /* 跨域是否开启验证信息*/
+    /* authorization info for cross-domain */
     xhr.withCredentials = this.withCredentials;
-    /* 是否需要设置请求头*/
+    /* setting request headers */
     const rh = this.requestHeaders;
     if (rh) {
       Object.keys(rh).forEach(key =>
@@ -198,7 +189,7 @@ export default class ReactUploadFile extends Component {
       );
     }
 
-    /* 处理超时。用定时器判断超时，不然xhr state=4 catch的错误无法判断是超时*/
+    /* handle timeout */
     if (this.timeout) {
       xhr.timeout = this.timeout;
       xhr.ontimeout = () => {
@@ -212,7 +203,7 @@ export default class ReactUploadFile extends Component {
     }
 
     xhr.onreadystatechange = () => {
-      /* xhr finish*/
+      /* xhr request finished*/
       try {
         if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
           const resp = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
@@ -223,7 +214,7 @@ export default class ReactUploadFile extends Component {
           this.uploadFail(resp);
         }
       } catch (err) {
-        /* 超时抛出不一样的错误，不在这里处理*/
+        /* errors except timeout */
         if (!scope.isTimeout) { this.uploadError({ type: 'FINISHERROR', message: err.message }); }
       }
     };
@@ -237,24 +228,23 @@ export default class ReactUploadFile extends Component {
       }
     };
 
-    /* 这里部分浏览器实现不一致，而且ie没有这个方法*/
     xhr.onprogress = xhr.upload.onprogress = (progress) => {
       this.uploading(progress, mill);
     };
 
     xhr.send(formData);
 
-    /* save xhr id */
+    /* save xhr's id */
     const cID = this.state.xhrList.length - 1;
     this.setState({ currentXHRID: cID, xhrList: [...this.state.xhrList, xhr] });
 
-    /* 有响应abort的情况 */
+    /* abort */
     xhr.onabort = () => this.onAbort(mill, cID);
 
     /* trigger didUpload */
     this.didUpload(this.files, mill, this.state.currentXHRID);
 
-    /* clear input file */
+    /* clear input's files */
     e.target.value = '';
   }
 
@@ -269,34 +259,33 @@ export default class ReactUploadFile extends Component {
     return formData;
   }
 
-  /* public method, trigger commonChooseFile for debug */
+  /* public method. Manually trigger commonChooseFile for debug */
   forwardChooseFile = () => {
     this.commonChooseFile();
   }
 
   /**
-   * public method，当多文件上传时，用这个方法主动删除列表中某个文件
-   * TODO: 此方法应为可以任意操作文件数组
-   * @param func 用户调用时传入的函数，函数接收参数files（filesAPI 对象）
-   * @return Obj File API 对象
-   * File API Obj:
+   * public method. Manually process files
+   * @param func(files)
+   * @return files
+   * Filelist:
    * {
-   *   0 : file,
-   *   1 : file,
-   *   length : 2
+   *   0: file,
+   *   1: file,
+   *   length: 2
    * }
    */
-  fowardRemoveFile = (func) => {
+  fowardProcessFile = (func) => {
     this.files = func(this.files);
   }
 
-  /* public method，manual trigger commonUploadFile to upload files */
+  /* public method. Manually trigger commonUploadFile to upload files */
   filesToUpload = (files) => {
     this.files = files;
     this.commonUploadFile();
   }
 
-  /* public method，取消一个正在进行的xhr，传入id指定xhr（didUpload时返回）,默认取消最后一个。 */
+  /* public method. Abort a xhr by id which didUpload has returned, default the last one */
   abort = (id) => {
     if (id) {
       this.state.xhrList[id].abort();
