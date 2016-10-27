@@ -1,4 +1,4 @@
-# ReactUploadFile #
+# react-upload-file #
 
 [![npm version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
 
@@ -19,7 +19,7 @@
 
 
 ## Introduce ##
-A **light-weight**, **friendly** and **useful** file upload component of React, support IE10+
+A **light**, **fast** and **powerful** file upload component of React, support IE10+, partial support IE9.
 
 ```jsx
 import ReactUploadFile from 'react-upload-file';
@@ -40,7 +40,7 @@ render() {
 }
 ```
 
-## Install ##
+## Installation ##
 `npm install react-upload-file -S`
 
 ## API ##
@@ -146,7 +146,7 @@ You can display two of your custom buttons by setting two attributes of `ReactUp
 Component that interacts with user to choose files.
 
 #### [uploadFile]
-Component that starts uploading.
+Component that starts uploading(optional).
 
 ```jsx
 <ReactUploadFile options={...} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />

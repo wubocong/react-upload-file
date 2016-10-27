@@ -133,7 +133,7 @@ export default class ReactUploadFile extends Component {
       e.target.value = '';
       return false;
     }
-    if (!this.files) return;
+    if (!this.files) return false;
     if (!this.baseUrl) throw new Error('baseUrl missing in options');
 
     /* store info of current scope*/
@@ -246,6 +246,8 @@ export default class ReactUploadFile extends Component {
 
     /* clear input's files */
     e.target.value = '';
+
+    return true;
   }
 
   /* append text params to formData */

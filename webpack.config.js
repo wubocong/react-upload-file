@@ -47,7 +47,6 @@ const prodBundleConfig = Object.assign({}, sharedConfig, {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
-        screw_ie8: true,
         warnings: false
       }
     })
