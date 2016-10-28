@@ -4,9 +4,8 @@
   "description": "Upload files async with xhr2.",
   "main": "dist/index.min.js",
   "scripts": {
-    "test": "echo 404",
-    "build": "webpack",
-    "start": "npm run build"
+    "test": "npm run build",
+    "build": "webpack"
   },
   "keywords": [
     "upload",
