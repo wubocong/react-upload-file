@@ -150,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        e.target.value = '';
 	        return false;
 	      }
-	      if (!_this.files) return;
+	      if (!_this.files) return false;
 	      if (!_this.baseUrl) throw new Error('baseUrl missing in options');
 
 	      /* store info of current scope*/
@@ -269,6 +269,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      /* clear input's files */
 	      e.target.value = '';
+
+	      return true;
 	    };
 
 	    _this.appendFieldsToFormData = function (formData) {

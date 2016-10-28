@@ -1,10 +1,10 @@
 {
   "name": "react-upload-file",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Upload files async with xhr2.",
   "main": "dist/index.min.js",
   "scripts": {
-    "test": "node webpack.config.test.js",
+    "test": "echo 404",
     "build": "webpack",
     "start": "npm run build"
   },
@@ -46,6 +46,7 @@
     "eslint-plugin-prefer-object-spread": "^1.1.0",
     "eslint-plugin-react": "^6.4.1",
     "jsx-loader": "^0.13.2",
+    "mocha": "^3.1.2",
     "react-dom": "^15.3.2",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2"
