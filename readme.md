@@ -3,10 +3,10 @@
 [![NPM version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
 [![NPM downloads](http://img.shields.io/npm/dm/react-upload-file.svg?style=flat)](https://npmjs.org/package/react-upload-file)
 [![Build Status](https://secure.travis-ci.org/wubocong/react-upload-file.png)](https://travis-ci.org/wubocong/react-upload-file)
-[![License](https://img.shields.io/npm/l/reac-upload-file.svg)](https://spdx.org/licenses/MIT)
+[![License](https://img.shields.io/github/license/wubocong/react-upload-file.svg)](https://spdx.org/licenses/MIT)
 [![Code Climate](https://codeclimate.com/github/wubocong/react-upload-file/badges/gpa.svg)](https://codeclimate.com/github/wubocong/react-upload-file)
 [![Test Coverage](https://codeclimate.com/github/wubocong/react-upload-file/badges/coverage.svg)](https://codeclimate.com/github/wubocong/react-upload-file/coverage)
-
+[![Node.js version](https://img.shields.io/node/v/gh-badges.svg)](https://nodejs.org)
 ## Index ##
 
 ### Catalog ###

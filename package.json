@@ -1,8 +1,11 @@
 {
   "name": "react-upload-file",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Upload files async with xhr2.",
   "main": "dist/index.min.js",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "scripts": {
     "test": "npm run build",
     "build": "webpack"
