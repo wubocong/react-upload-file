@@ -19,7 +19,7 @@
 
 
 ## Introduce ##
-A **light**, **fast** and **powerful** file upload component of React, support IE10+, partial support IE9.
+A **light**, **fast** and **powerful** file upload component of React, which support IE10+ and partially support IE9.
 
 ```jsx
 import ReactUploadFile from 'react-upload-file';
@@ -164,7 +164,7 @@ If you don't set the `uploadFile` attribute, then `ReactUploadFile` will upload 
 <ReactUploadFile options={...} chooseFile=(<YourChooseButton />) />
 ```
 
-### Component functions ###
+### Component Functions ###
 Use via ref. eg:
 
 ```jsx
@@ -174,7 +174,7 @@ componentDidUpdate() {
 
 render() {
   return (
-    <ReactUploadFile ref={(upload) => { this.upload = upload; }} options={...} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
+    <ReactUploadFile ref={(upload) => {this.upload = upload;}} options={...} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
   );
 }
 ```
