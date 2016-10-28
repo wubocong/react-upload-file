@@ -1,6 +1,7 @@
 # react-upload-file #
 
 [![npm version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
+[![Build Status](https://secure.travis-ci.org/wubocong/react-upload-file.png)](https://travis-ci.org/wubocong/react-upload-file)
 
 ## Index ##
 
