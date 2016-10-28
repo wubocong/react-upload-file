@@ -1,10 +1,13 @@
 # react-upload-file #
 
-[![npm version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
+[![NPM version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
+[![NPM downloads](http://img.shields.io/npm/dm/react-upload-file.svg?style=flat)](https://npmjs.org/package/react-upload-file)
 [![Build Status](https://secure.travis-ci.org/wubocong/react-upload-file.png)](https://travis-ci.org/wubocong/react-upload-file)
+[![License](https://img.shields.io/npm/l/reac-upload-file.svg)](https://spdx.org/licenses/MIT)
+[![Code Climate](https://codeclimate.com/github/wubocong/react-upload-file/badges/gpa.svg)](https://codeclimate.com/github/wubocong/react-upload-file)
+[![Test Coverage](https://codeclimate.com/github/wubocong/react-upload-file/badges/coverage.svg)](https://codeclimate.com/github/wubocong/react-upload-file/coverage)
 
 ## Index ##
-
 
 ### Catalog ###
 * [Introduce](#introduce)
@@ -20,7 +23,7 @@
 
 
 ## Introduce ##
-A **light**, **fast** and **powerful** file upload component of React, which support IE10+ and partially support IE9.
+A **light**, **fast** and **powerful** file upload component of React which support IE10+ and partially support IE9, requiring node4+.
 
 ```jsx
 import ReactUploadFile from 'react-upload-file';
