@@ -1,7 +1,7 @@
 {
   "name": "react-upload-file",
-  "version": "1.2.4",
-  "description": "Upload files async with xhr2.",
+  "version": "1.2.5",
+  "description": "Modern React File Upload Component for IE9+",
   "main": "dist/index.min.js",
   "engines": {
     "node": ">=4.0.0"
@@ -15,8 +15,7 @@
     "react",
     "file",
     "xhr2",
-    "component",
-    "mocha"
+    "component"
   ],
   "repository": {
     "type": "git",
@@ -48,7 +47,6 @@
     "eslint-plugin-prefer-object-spread": "^1.1.0",
     "eslint-plugin-react": "^6.4.1",
     "jsx-loader": "^0.13.2",
-    "mocha": "^3.1.2",
     "react-dom": "^15.3.2",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2"
