@@ -26,7 +26,7 @@
 
 
 ## Introduce ##
-A **light**, **modern** and **powerful** file upload component of React which support IE10+ and basically support IE9, requiring node4+.
+A **structure-only**, **ui-customizable** and **modern** file upload component of React which support IE10+ and basically support IE9, requiring node4+.
 
 ## Installation ##
 `npm install react-upload-file -S`
