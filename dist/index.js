@@ -177,26 +177,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 
 	      var baseUrl = _this.baseUrl;
-	      /* url params*/
-	      var param = typeof _this.param === 'function' ? _this.param(_this.files) : _this.param;
-
-	      var paramStr = '';
-
-	      if (param) {
+	      /* url query*/
+	      var query = typeof _this.query === 'function' ? _this.query(_this.files) : _this.query;
+	      var pos = baseUrl.indexOf('?');
+	      var queryStr = void 0;
+	      if (pos > -1) {
+	        queryStr = baseUrl.substring(pos);
+	      }
+	      if (query) {
 	        (function () {
-	          var paramArr = [];
-	          param._ = mill;
-	          Object.keys(param).forEach(function (key) {
-	            return paramArr.push(key + '=' + param[key]);
+	          if (queryStr) {
+	            console.warn('Your url contains query string, which will be ignored when options.query is set.');
+	          }
+	          var queryArr = [];
+	          query._ = mill;
+	          Object.keys(query).forEach(function (key) {
+	            return queryArr.push(key + '=' + query[key]);
 	          });
-	          paramStr = '?' + paramArr.join('&');
+	          queryStr = '?' + queryArr.join('&');
 	        })();
 	      }
-	      var targeturl = baseUrl + paramStr;
+	      var targetUrl = '' + baseUrl.substring(0, pos) + queryStr;
 
 	      /* execute ajax upload */
 	      var xhr = new XMLHttpRequest();
-	      xhr.open('POST', targeturl, true);
+	      xhr.open('POST', targetUrl, true);
 
 	      /* authorization info for cross-domain */
 	      xhr.withCredentials = _this.withCredentials;
@@ -397,7 +402,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  options: _react.PropTypes.shape({
 	    /* basics*/
 	    baseUrl: _react.PropTypes.string.isRequired,
-	    param: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
+	    query: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
 	    dataType: _react.PropTypes.string,
 	    paramAddToField: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
 	    timeout: _react.PropTypes.number,

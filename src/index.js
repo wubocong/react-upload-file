@@ -9,7 +9,7 @@ export default class ReactUploadFile extends Component {
     options: PropTypes.shape({
       /* basics*/
       baseUrl: PropTypes.string.isRequired,
-      param: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+      query: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
       dataType: PropTypes.string,
       paramAddToField: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
       timeout: PropTypes.number,
@@ -160,24 +160,29 @@ export default class ReactUploadFile extends Component {
     });
 
     const baseUrl = this.baseUrl;
-    /* url params*/
-    const param = typeof this.param === 'function' ? this.param(this.files) : this.param;
-
-    let paramStr = '';
-
-    if (param) {
-      const paramArr = [];
-      param._ = mill;
-      Object.keys(param).forEach(key =>
-        paramArr.push(`${key}=${param[key]}`)
-      );
-      paramStr = `?${paramArr.join('&')}`;
+    /* url query*/
+    const query = typeof this.query === 'function' ? this.query(this.files) : this.query;
+    const pos = baseUrl.indexOf('?');
+    let queryStr;
+    if (pos > -1) {
+      queryStr = baseUrl.substring(pos);
     }
-    const targeturl = baseUrl + paramStr;
+    if (query) {
+      if (queryStr) {
+        console.warn('Your url contains query string, which will be ignored when options.query is set.');
+      }
+      const queryArr = [];
+      query._ = mill;
+      Object.keys(query).forEach(key =>
+        queryArr.push(`${key}=${query[key]}`)
+      );
+      queryStr = `?${queryArr.join('&')}`;
+    }
+    const targetUrl = `${baseUrl.substring(0, pos)}${queryStr}`;
 
     /* execute ajax upload */
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', targeturl, true);
+    xhr.open('POST', targetUrl, true);
 
     /* authorization info for cross-domain */
     xhr.withCredentials = this.withCredentials;

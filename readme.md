@@ -1,10 +1,10 @@
 # react-upload-file #
 
 [![NPM version](https://badge.fury.io/js/react-upload-file.svg)](https://www.npmjs.com/package/react-upload-file)
-[![NPM monthly downloads](http://img.shields.io/npm/dm/react-upload-file.svg?style=flat)](https://npmjs.org/package/react-upload-file)
-[![NPM total downloads](https://img.shields.io/npm/dt/react-upload-file.svg?style=flat)](https://npmjs.org/package/react-upload-file)
+[![NPM monthly downloads](http://img.shields.io/npm/dm/react-upload-file.svg)](https://npmjs.org/package/react-upload-file)
+[![NPM total downloads](https://img.shields.io/npm/dt/react-upload-file.svg)](https://npmjs.org/package/react-upload-file)
 [![Dependencies Status](https://david-dm.org/wubocong/react-upload-file/status.svg)](https://david-dm.org/wubocong/react-upload-file)
-[![Build Status](https://img.shields.io/travis/wubocong/react-upload-file.png)](https://travis-ci.org/wubocong/react-upload-file)
+[![Build Status](https://img.shields.io/travis/wubocong/react-upload-file.svg)](https://travis-ci.org/wubocong/react-upload-file)
 [![License](https://img.shields.io/github/license/wubocong/react-upload-file.svg)](https://spdx.org/licenses/MIT)
 [![Code Climate](https://codeclimate.com/github/wubocong/react-upload-file/badges/gpa.svg)](https://codeclimate.com/github/wubocong/react-upload-file)
 [![Test Coverage](https://codeclimate.com/github/wubocong/react-upload-file/badges/coverage.svg)](https://codeclimate.com/github/wubocong/react-upload-file/coverage)
@@ -13,41 +13,27 @@
 
 ### Catalog ###
 * [Introduce](#introduce)
-* [Install](#install)
+* [Installation](#installation)
+  * [Best Practices](#best-practices)
 * [API](#api)
   * [Basic Options](#basic-options)
   * [Life Circle Functions](#life-circle-functions)
   * [Custom Buttons](#custom-buttons)
   * [Component Functions](#component-functions)
 * [Examples](#examples)
-* [Author](#contributor)
+* [Author](#author)
 * [License](#license)
 
 
 ## Introduce ##
-A **light**, **modern** and **powerful** file upload component of React which support IE10+ and partially support IE9, requiring node4+.
-
-```jsx
-import ReactUploadFile from 'react-upload-file';
-...
-render() {
-  /* set properties */
-  const options = {
-    baseUrl: 'http://127.0.0.1',
-    param: {
-      warrior: 'fight'
-    }
-  }
-  /* Use ReactUploadFile with options */
-  /* Custom your buttons */
-  return (
-    <ReactUploadFile options={options} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
-  );
-}
-```
+A **light**, **modern** and **powerful** file upload component of React which support IE10+ and basically support IE9, requiring node4+.
 
 ## Installation ##
 `npm install react-upload-file -S`
+
+### Best Practices ###
++ It's recommened to use arrow function to avoid 'this' problems.
++ Queries in `baseUrl` will be ignored if `query` is set.
 
 ## API ##
 
@@ -63,7 +49,7 @@ options: {
 name | type | default | note
 ------------ | ------------- | ------------ | ------------
 baseUrl | string | '' | url
-param | object | undefined | params that appended after `baseUrl`.
+query | object | undefined | queries that appended after `baseUrl`.
 dataType | json/text  | 'json' | type of response.
 timeout | number | 0 | Timeout of the request. Callback function `uploadError` will be triggered and an object { type: 'TIMEOUTERROR', message: 'timeout' } will be returned as the argument. Default to 0 meaning no limit.
 paramAddToField | object/func | undefined | Key-value that need to add to  formData. When it is a function, use the return.
@@ -145,7 +131,7 @@ Callback when upload failed (according to the AJAX simply).
 
 @param resp {string} Message of it.
 
-### Custom buttons ###
+### Custom Buttons ###
 You can display two of your custom buttons by setting two attributes of `ReactUploadFile` as mentioned before.
 
 #### chooseFile
@@ -214,7 +200,7 @@ render() {
   /* set properties */
   const options = {
     baseUrl: 'http://127.0.0.1',
-    param: {
+    query: {
       warrior: 'fight'
     }
   }
@@ -230,8 +216,8 @@ Most of the options may be set like:
 
 ```jsx
 options: {
-  baseUrl: './upload',
-  param: {
+  baseUrl: 'http://localhost:8080/upload',
+  query: {
     category: '1',
     _: Date().getTime()
   },
@@ -239,7 +225,6 @@ options: {
   multiple: true,
   numberLimit: 9,
   accept: 'image/*',
-  chooseAndUpload: false,
   paramAddToField: {
     purpose: 'save'
   },
@@ -251,13 +236,13 @@ options: {
   requestHeaders: {
     'User-Agent': 'Warrior!'
   },
-  beforeChoose: function () {
+  beforeChoose: () => {
     return user.isAllowUpload;
   },
-  chooseFile: function (files) {
+  chooseFile: (files) => {
     console.log('you choose', typeof files == 'string' ? files : files[0].name);
   },
-  beforeUpload: function (files, mill) {
+  beforeUpload: (files, mill) => {
     if (typeof files === 'string') return true;
     if (files[0].size < 1024 * 1024 * 20) {
       files[0].mill = mill;
@@ -265,19 +250,19 @@ options: {
     }
     return false;
   },
-  doUpload: function (files, mill) {
+  doUpload: (files, mill) => {
     console.log('you just uploaded', typeof files === 'string' ? files : files[0].name);
   },
-  uploading: function (progress) {
+  uploading: (progress) => {
     console.log('loading...', progress.loaded / progress.total + '%');
   },
-  uploadSuccess: function (resp) {
+  uploadSuccess: (resp) => {
     console.log('upload success!');
   },
-  uploadError: function (err) {
+  uploadError: (err) => {
     alert(err.message);
   },
-  uploadFail: function (resp) {
+  uploadFail: (resp) => {
     alert(resp);
   }
 }
@@ -287,6 +272,9 @@ if (typeof window === 'undefined') {
 }
 
 ```
+
+## Author ##
+Warrior! from HCI@SCAU
 
 ## License ##
 MIT

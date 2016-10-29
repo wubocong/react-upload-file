@@ -1,6 +1,6 @@
 {
   "name": "react-upload-file",
-  "version": "1.2.5",
+  "version": "1.3.1",
   "description": "Modern React File Upload Component for IE9+",
   "main": "dist/index.min.js",
   "engines": {
