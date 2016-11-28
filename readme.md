@@ -141,7 +141,7 @@ Component that interacts with user to choose files.
 Component that starts uploading(optional).
 
 ```jsx
-<ReactUploadFile options={...} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
+<ReactUploadFile options={...} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
 ```
 
 Will be rendered like this:
@@ -153,7 +153,7 @@ Will be rendered like this:
 If you don't set the `uploadFile` attribute, then `ReactUploadFile` will upload the files immediately after you choose files.
 
 ```jsx
-<ReactUploadFile options={...} chooseFile=(<YourChooseButton />) />
+<ReactUploadFile options={...} chooseFile={<YourChooseButton />} />
 ```
 
 ### Component Functions ###
@@ -166,7 +166,7 @@ componentDidUpdate() {
 
 render() {
   return (
-    <ReactUploadFile ref={(upload) => {this.upload = upload;}} options={...} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
+    <ReactUploadFile ref={(upload) => {this.upload = upload;}} options={...} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
   );
 }
 ```
@@ -207,7 +207,7 @@ render() {
   /* Use ReactUploadFile with options */
   /* Custom your buttons */
   return (
-    <ReactUploadFile options={options} chooseFile=(<YourChooseButton />) uploadFile=(<YourUploadButton />) />
+    <ReactUploadFile options={options} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
   );
 }
 ```
@@ -229,7 +229,7 @@ options: {
     purpose: 'save'
   },
   // fileFieldName: 'file',
-  fileFieldName(file) {
+  fileFieldName: (file) {
     return file.name;
   },
   withCredentials: false,

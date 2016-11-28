@@ -98,7 +98,7 @@ export default class ReactUploadFile extends Component {
     this.onChoose(this.files);
 
     /* immediately upload files */
-    if (!this.uploadFile) {
+    if (!this.props.uploadFile) {
       this.commonUploadFile(e);
     }
   };
