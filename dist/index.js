@@ -116,7 +116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.onChoose(_this.files);
 
 	      /* immediately upload files */
-	      if (!_this.uploadFile) {
+	      if (!_this.props.uploadFile) {
 	        _this.commonUploadFile(e);
 	      }
 	    };
