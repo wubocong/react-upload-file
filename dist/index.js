@@ -107,16 +107,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (e.target.name !== 'ajax-upload-file-input') {
 	        var jud = _this.beforeChoose();
 	        if (jud !== true && jud !== undefined) return;
-	        e.target.childNodes[0].click();
+	        _this.input.click();
 	      }
 	    };
 
 	    _this.commonChangeFile = function (e) {
-	      _this.files = e.target.files;
-	      _this.onChoose(_this.files);
+	      _this.files = _this.input.files;
+	      _this.didChoose(_this.files);
 
 	      /* immediately upload files */
-	      if (!_this.props.uploadFile) {
+	      if (!_this.props.uploadFileButton) {
 	        _this.commonUploadFile(e);
 	      }
 	    };
@@ -144,10 +144,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 
-	      var jud = _this.beforeUpload(files, mill);
+	      var jud = e === true ? true : _this.beforeUpload(files, mill);
 	      if (jud !== true && jud !== undefined) {
 	        /* clear input's' files */
-	        e.target.value = '';
+	        _this.input.value = '';
 	        return false;
 	      }
 	      if (!_this.files) return false;
@@ -183,6 +183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var queryStr = void 0;
 	      if (pos > -1) {
 	        queryStr = baseUrl.substring(pos);
+	        baseUrl = baseUrl.substring(0, pos);
 	      }
 	      if (query) {
 	        (function () {
@@ -197,7 +198,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          queryStr = '?' + queryArr.join('&');
 	        })();
 	      }
-	      var targetUrl = '' + baseUrl.substring(0, pos) + queryStr;
+	      queryStr = queryStr || '';
+	      var targetUrl = '' + baseUrl + queryStr;
 
 	      /* execute ajax upload */
 	      var xhr = new XMLHttpRequest();
@@ -217,7 +219,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (_this.timeout) {
 	        xhr.timeout = _this.timeout;
 	        xhr.ontimeout = function () {
-	          _this.uploadError({ type: 'TIMEOUTERROR', message: 'timeout' });
+	          _this.uploadError({
+	            type: 'TIMEOUTERROR',
+	            message: 'timeout'
+	          });
 	          scope.isTimeout = false;
 	        };
 	        scope.isTimeout = false;
@@ -240,7 +245,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } catch (err) {
 	          /* errors except timeout */
 	          if (!scope.isTimeout) {
-	            _this.uploadError({ type: 'FINISHERROR', message: err.message });
+	            _this.uploadError({
+	              type: 'FINISHERROR',
+	              message: err.message
+	            });
 	          }
 	        }
 	      };
@@ -248,9 +256,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      xhr.onerror = function () {
 	        try {
 	          var resp = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-	          _this.uploadError({ type: 'XHRERROR', message: resp });
+	          _this.uploadError({
+	            type: 'XHRERROR',
+	            message: resp
+	          });
 	        } catch (err) {
-	          _this.uploadError({ type: 'XHRERROR', message: err.message });
+	          _this.uploadError({
+	            type: 'XHRERROR',
+	            message: err.message
+	          });
 	        }
 	      };
 
@@ -262,7 +276,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      /* save xhr's id */
 	      var cID = _this.state.xhrList.length - 1;
-	      _this.setState({ currentXHRID: cID, xhrList: [].concat(_toConsumableArray(_this.state.xhrList), [xhr]) });
+	      _this.setState({
+	        currentXHRID: cID,
+	        xhrList: [].concat(_toConsumableArray(_this.state.xhrList), [xhr])
+	      });
 
 	      /* abort */
 	      xhr.onabort = function () {
@@ -273,13 +290,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.didUpload(_this.files, mill, _this.state.currentXHRID);
 
 	      /* clear input's files */
-	      e.target.value = '';
+	      _this.input.value = '';
 
 	      return true;
 	    };
 
 	    _this.appendFieldsToFormData = function (formData) {
-	      var field = typeof _this.paramAddToField === 'function' ? _this.paramAddToField() : _this.paramAddToField;
+	      var field = typeof _this.body === 'function' ? _this.body() : _this.body;
 	      if (field) {
 	        Object.keys(field).forEach(function (index) {
 	          formData.append(index, field[index]);
@@ -288,17 +305,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return formData;
 	    };
 
-	    _this.forwardChooseFile = function () {
-	      _this.commonChooseFile();
-	    };
-
-	    _this.fowardProcessFile = function (func) {
+	    _this.processFile = function (func) {
 	      _this.files = func(_this.files);
 	    };
 
-	    _this.filesToUpload = function (files) {
-	      _this.files = files;
-	      _this.commonUploadFile();
+	    _this.manuallyChooseFile = function () {
+	      _this.commonChooseFile();
+	    };
+
+	    _this.manuallyUploadFile = function (files) {
+	      _this.files = files instanceof FileList ? files : _this.files instanceof FileList ? _this.files : _this.input.files;
+	      _this.commonUploadFile(true);
 	    };
 
 	    _this.abort = function (id) {
@@ -318,7 +335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      multiple: false,
 	      withCredentials: false,
 	      beforeChoose: emptyFunction,
-	      onChoose: emptyFunction,
+	      didChoose: emptyFunction,
 	      beforeUpload: emptyFunction,
 	      didUpload: emptyFunction,
 	      uploading: emptyFunction,
@@ -339,58 +356,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _this;
 	  }
 
-	  /* trigger input's click*/
-	  /* trigger beforeChoose*/
-
-
-	  /* input change event with File API */
-	  /* trigger chooseFile */
-
-
-	  /* execute upload */
-
-
-	  /* append text params to formData */
-
-
-	  /* public method. Manually trigger commonChooseFile for debug */
-
-
-	  /**
-	   * public method. Manually process files
-	   * @param func(files)
-	   * @return files
-	   * Filelist:
-	   * {
-	   *   0: file,
-	   *   1: file,
-	   *   length: 2
-	   * }
-	   */
-
-
-	  /* public method. Manually trigger commonUploadFile to upload files */
-
-
-	  /* public method. Abort a xhr by id which didUpload has returned, default the last one */
-
-
 	  _createClass(ReactUploadFile, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.input = document.querySelector('[name=ajax-upload-file-input]');
+	    }
+
+	    /* trigger input's click*/
+	    /* trigger beforeChoose*/
+
+
+	    /* input change event with File API */
+	    /* trigger chooseFile */
+
+
+	    /* execute upload */
+
+
+	    /* append text params to formData */
+
+
+	    /**
+	     * public method. Manually process files
+	     * @param func(files)
+	     * @return files
+	     * Filelist:
+	     * {
+	     *   0: file,
+	     *   1: file,
+	     *   length: 2
+	     * }
+	     */
+
+
+	    /* public method. Manually trigger commonChooseFile for debug */
+
+
+	    /* public method. Manually trigger commonUploadFile to upload files */
+
+
+	    /* public method. Abort a xhr by id which didUpload has returned, default the last one */
+
+	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var inputProps = { accept: this.props.options.accept, multiple: this.props.options.multiple };
-	      var chooseFileBtn = _react2.default.cloneElement(this.props.chooseFile, { onClick: this.commonChooseFile }, [_react2.default.createElement('input', _extends({
-	        type: 'file', name: 'ajax-upload-file-input',
-	        style: { display: 'none' }, onChange: this.commonChangeFile
-	      }, inputProps, {
-	        key: 'file-button'
-	      }))]);
-	      var uploadFileBtn = this.props.uploadFile && _react2.default.cloneElement(this.props.uploadFile, { onClick: this.commonUploadFile });
+	      var inputProps = {
+	        accept: this.props.options.accept,
+	        multiple: this.props.options.multiple
+	      };
+	      var chooseFileButton = _react2.default.cloneElement(this.props.chooseFileButton, {
+	        onClick: this.commonChooseFile
+	      }, [_react2.default.createElement('input', _extends({ type: 'file', name: 'ajax-upload-file-input', style: { display: 'none' }, onChange: this.commonChangeFile }, inputProps, { key: 'file-button' }))]);
+	      var uploadFileButton = this.props.uploadFileButton && _react2.default.cloneElement(this.props.uploadFileButton, {
+	        onClick: this.commonUploadFile
+	      });
 	      return _react2.default.createElement(
 	        'div',
-	        null,
-	        chooseFileBtn,
-	        uploadFileBtn
+	        { style: { display: 'inline-block' } },
+	        chooseFileButton,
+	        uploadFileButton
 	      );
 	    }
 	  }]);
@@ -403,8 +427,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /* basics*/
 	    baseUrl: _react.PropTypes.string.isRequired,
 	    query: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
+	    body: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
 	    dataType: _react.PropTypes.string,
-	    paramAddToField: _react.PropTypes.oneOfType([_react.PropTypes.object, _react.PropTypes.func]),
 	    timeout: _react.PropTypes.number,
 	    numberLimit: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.func]),
 	    fileFieldName: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
@@ -415,7 +439,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    userAgent: _react.PropTypes.string,
 	    /* funcs*/
 	    beforeChoose: _react.PropTypes.func,
-	    onChoose: _react.PropTypes.func,
+	    didChoose: _react.PropTypes.func,
 	    beforeUpload: _react.PropTypes.func,
 	    didUpload: _react.PropTypes.func,
 	    uploading: _react.PropTypes.func,
@@ -427,12 +451,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  style: _react.PropTypes.object,
 	  className: _react.PropTypes.string,
 	  /* buttons*/
-	  chooseFile: _react.PropTypes.element.isRequired,
-	  uploadFile: _react.PropTypes.element
+	  chooseFileButton: _react.PropTypes.element.isRequired,
+	  uploadFileButton: _react.PropTypes.element
 	};
 	ReactUploadFile.defaultProps = {
 	  /* buttons*/
-	  chooseFile: _react2.default.createElement('button', null)
+	  chooseFileButton: _react2.default.createElement('button', null)
 	};
 	exports.default = ReactUploadFile;
 

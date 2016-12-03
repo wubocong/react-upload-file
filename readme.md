@@ -9,6 +9,8 @@
 [![Code Climate](https://codeclimate.com/github/wubocong/react-upload-file/badges/gpa.svg)](https://codeclimate.com/github/wubocong/react-upload-file)
 [![Test Coverage](https://codeclimate.com/github/wubocong/react-upload-file/badges/coverage.svg)](https://codeclimate.com/github/wubocong/react-upload-file/coverage)
 
+## Maybe the Best File Upload Component for React
+
 ## Index ##
 
 ### Catalog ###
@@ -48,100 +50,104 @@ options: {
 
 name | type | default | note
 ------------ | ------------- | ------------ | ------------
-baseUrl | string | '' | url
-query | object | undefined | queries that appended after `baseUrl`.
-dataType | json/text  | 'json' | type of response.
-timeout | number | 0 | Timeout of the request. Callback function `uploadError` will be triggered and an object { type: 'TIMEOUTERROR', message: 'timeout' } will be returned as the argument. Default to 0 meaning no limit.
-paramAddToField | object/func | undefined | Key-value that need to add to  formData. When it is a function, use the return.
-accept | string | undefined | Limit the type (extension) of file.
-multiple | boolean | false | Allow multi-upload or not.
-numberLimit | number/func | 10 | Limit how much file that user can choose in multi-upload case.User can still choose but `ReactUploadFile` will filter.
-fileFieldName | string/func | undefined | Determine the field name of file. If it is a function, which will receive each file object as argument, use its return value. Default to file's name.
-withCredentials | boolean | false | Same as 'xhr.withCredentials'.
-requestHeaders | object | undefined | Key-values that will be set using 'xhr.setRequestHeader(key, value)'.
-userAgent | string | window.navigator.userAgent | Used to set the User Agent String when serverside rendering isomorphic applications. (required when rendering on the server)
+baseUrl | String | '' | url
+query | Object/Function | undefined | Queries that appended after `baseUrl`. When it is a function, use its return value
+body | Object/Function | undefined | Key-values that need to add to formData besides files. When it is a function, use its return value
+dataType | String  | 'json' | Accept type of response(json or text)
+timeout | Number | 0 | Timeout of the request. Callback function `uploadError` will be triggered and an object { type: 'TIMEOUTERROR', message: 'timeout' } will be returned as the argument. Default to 0 meaning no limit
+accept | String | undefined | Limit the type (extension) of file
+multiple | Boolean | false | Allow multi-upload or not
+numberLimit | Number/Function | 10 | Limit how much file that user can choose in multi-upload case.User can still choose but `ReactUploadFile` will filter
+fileFieldName | String/Function | undefined | Determine the field name of file. If it is a function, which will receive each file object as argument, use its return value. Default to file's name
+withCredentials | Boolean | false | Same as 'xhr.withCredentials'
+requestHeaders | Object | undefined | Key-values that will be set using 'xhr.setRequestHeader(key, value)'
+userAgent | String | window.navigator.userAgent | Used to set the userAgent string with serverside rendering isomorphic applications(required when rendering on the server)
 
 ### Life Circle Functions ###
 Also set as the properties of options.
 
 #### beforeChoose() ####
-Triggered immediately after clicking the `chooseFile` but before choosing file. Return true to continue or false to stop choosing.
+Triggered immediately after clicking the `chooseFileButton` but before `didChoose`. Return true to continue or false to stop choosing.
 
-@param
+@param null
 
-@return {boolean} Determine whether to continue uploading
+@return {Boolean} Determine whether to continue uploading
 
-#### chooseFile(files) ####
+#### didChoose(files) ####
 The callback triggered after choosing.
 
-@param files {array[File]} The array contains files.
+@param filelist {Filelist} The array contains files.
 
-@return
+@return **your return**
 
 #### beforeUpload(files, mill) ####
 Triggered before uploading. Return true to continue or false to stop uploading.
 
-@param files {array[File] | string} The array contains files.
+@param files {Filelist | string} The array contains files.
 
 @param mill {long} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
 
-@return {boolean} Allow the upload action or not.
+@return {Boolean} Allow the upload action or not.
 
 #### didUpload(files, mill, xhrID) ####
 Triggered after the request is sent(xhr send | form submit).
 
-@param files {array[File] | string} The array contains files.
+@param files {Filelist | string} The array contains files.
 
-@param mill {long} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
+@param mill {Long} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
 
-@param xhrID {int} ID of this uploading xhr. Could be useful for `abort`.
+@param xhrID {Int} ID of this uploading xhr. Could be useful for `abort`.
 
-@return
+@return **your return**
 
 #### onAbort(mill, id) ####
 Triggered after you aborting a xhr.
 
-@param mill {long} The time of the upload action (millisecond) that you aborted.
+@param mill {Long} The time of the upload action (millisecond) that you aborted.
 
-@param xhrID {int} The ID of the xhr taht you aborted.
+@param xhrID {Int} The ID of the xhr taht you aborted.
+
+@return **your return**
 
 #### uploading(progress) ####
 It will be triggered continuously when the file is uploading in moderns.
 
 @param progress {Progress} Progress instance，useful properties such as loaded and total can be found.
 
-@return
+@return **your return**
 
 #### uploadSuccess(resp) ####
 Callback when upload succeed (according to the AJAX simply).
 
-@param resp {json | string} The response is fomatted According to options.dataType.
+@param resp {JSON | String} The response is formatted according to options.dataType.
 
-@return
+@return **your return**
 
-#### uploadError(err) ####
+#### uploadError ####
 Callback when error occurred (according to the AJAX simply).
 
-@param err {Error | object} If this is an error that caught by `try`, it will be an object with `type` and `message`.
+@param err {Error | Object} If this is an error that caught by `try`, it will be an object with `type` and `message`.
 
-@return
+@return **your return**
 
-#### uploadFail(resp) ####
+#### uploadFail ####
 Callback when upload failed (according to the AJAX simply).
 
-@param resp {string} Message of it.
+@param resp {String} Message of it.
+
+@return **your return**
 
 ### Custom Buttons ###
 You can display two of your custom buttons by setting two attributes of `ReactUploadFile` as mentioned before.
 
-#### chooseFile
-Component that interacts with user to choose files.
+#### chooseFileButton
+Component to choose files.
 
-#### [uploadFile]
-Component that starts uploading(optional).
+#### uploadFileButton(optional)
+Component that triggers uploading. If not specified, files will be uploaded immediately after chosen.
 
 ```jsx
-<ReactUploadFile options={...} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
+<ReactUploadFile options={...} chooseFileButton={<YourChooseButton />} uploadFileButton={<YourUploadButton />} />
 ```
 
 Will be rendered like this:
@@ -153,42 +159,53 @@ Will be rendered like this:
 If you don't set the `uploadFile` attribute, then `ReactUploadFile` will upload the files immediately after you choose files.
 
 ```jsx
-<ReactUploadFile options={...} chooseFile={<YourChooseButton />} />
+<ReactUploadFile options={...} chooseFileButton={<YourChooseButton />} />
 ```
 
 ### Component Functions ###
-Use via ref. eg:
+Get component reference via ref. eg:
 
 ```jsx
-componentDidUpdate() {
-  this.upload.filesToUpload([this.state.file]);
+componentDidMount() {
+  this.upload.manuallyChooseFile();
+}
+
+todo() {
+  this.upload.processFile(files => files)
 }
 
 render() {
   return (
-    <ReactUploadFile ref={(upload) => {this.upload = upload;}} options={...} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
+    <ReactUploadFile ref={(upload) => {this.upload = upload;}} options={...} chooseFileButton={<YourChooseButton />} uploadFileButton={<YourUploadButton />} didChoose={this.todo} />
   );
 }
 ```
 
-#### filesToUpload ####
-IF there is file(File instance) that need to be uploaded immediately,use this function. BeforeUpload() will be triggered after this function
+#### processFile ####
+Process files with customed function.
 
-@param files {array[file]} files array that need to be uploaded
+@param func {Function}
 
 @return null
 
-#### forwardChoose ####
-Do the same as clicking `chooseFile` . Only support modern browsers.
+#### manuallyChooseFile ####
+Do the same as clicking `chooseFileButton`. Only support modern browsers.
 
 @param null
+
+@return null
+
+#### manuallyUploadFile ####
+Upload files manually, use this function. BeforeUpload() won't be triggered after the invoke of this function.
+
+@param files {Filelist} filelist that need to be uploaded, default to the filelist of chosen files.
 
 @return null
 
 #### abort ####
 Abort a xhr. Temporarily only works in modern browsers.
 
-@param xhrID {int} If not passing an ID, will abort the newest one. You can get the ID of a xhr in `doUpload()`.
+@param xhrID {Int} If not passing an ID, will abort the newest one. You can get the ID of a xhr in `didUpload()`.
 
 ## Examples ##
 Simple example:
@@ -207,7 +224,7 @@ render() {
   /* Use ReactUploadFile with options */
   /* Custom your buttons */
   return (
-    <ReactUploadFile options={options} chooseFile={<YourChooseButton />} uploadFile={<YourUploadButton />} />
+    <ReactUploadFile options={options} chooseFileButton={<YourChooseButton />} uploadFileButton={<YourUploadButton />} />
   );
 }
 ```
@@ -217,17 +234,33 @@ Most of the options may be set like:
 ```jsx
 options: {
   baseUrl: 'http://localhost:8080/upload',
-  query: {
-    category: '1',
-    _: Date().getTime()
+  // query: {
+  //   category: '1',
+  //   _: Date().getTime()
+  // },
+  query: (files)=>{
+    const l = files.length;
+    const queryObj = {};
+    for(let i = l-1; i >= 0; --i) {
+      queryObj[i] = files[i].name;
+    }
+    return queryObj;
+  }
+  // body: {
+  //   purpose: 'save'
+  // },
+  body: (files)=>{
+    const l = files.length;
+    const queryObj = {};
+    for(let i = l-1; i >= 0; --i) {
+      queryObj[i] = files[i].name;
+    }
+    return queryObj;
   },
   dataType: 'json',
   multiple: true,
   numberLimit: 9,
   accept: 'image/*',
-  paramAddToField: {
-    purpose: 'save'
-  },
   // fileFieldName: 'file',
   fileFieldName: (file) {
     return file.name;
@@ -239,7 +272,7 @@ options: {
   beforeChoose: () => {
     return user.isAllowUpload;
   },
-  chooseFile: (files) => {
+  didChoose: (files) => {
     console.log('you choose', typeof files == 'string' ? files : files[0].name);
   },
   beforeUpload: (files, mill) => {
@@ -250,7 +283,7 @@ options: {
     }
     return false;
   },
-  doUpload: (files, mill) => {
+  didUpload: (files, mill) => {
     console.log('you just uploaded', typeof files === 'string' ? files : files[0].name);
   },
   uploading: (progress) => {
@@ -268,7 +301,7 @@ options: {
 }
 
 if (typeof window === 'undefined') {
-  options.userAgent = this.props.userAgentString;
+  options.userAgent = this.props.userAgent;
 }
 
 ```

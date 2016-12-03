@@ -10,8 +10,8 @@ export default class ReactUploadFile extends Component {
       /* basics*/
       baseUrl: PropTypes.string.isRequired,
       query: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+      body: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
       dataType: PropTypes.string,
-      paramAddToField: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
       timeout: PropTypes.number,
       numberLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
       fileFieldName: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
@@ -22,7 +22,7 @@ export default class ReactUploadFile extends Component {
       userAgent: PropTypes.string,
       /* funcs*/
       beforeChoose: PropTypes.func,
-      onChoose: PropTypes.func,
+      didChoose: PropTypes.func,
       beforeUpload: PropTypes.func,
       didUpload: PropTypes.func,
       uploading: PropTypes.func,
@@ -34,18 +34,19 @@ export default class ReactUploadFile extends Component {
     style: PropTypes.object,
     className: PropTypes.string,
     /* buttons*/
-    chooseFile: PropTypes.element.isRequired,
-    uploadFile: PropTypes.element,
+    chooseFileButton: PropTypes.element.isRequired,
+    uploadFileButton: PropTypes.element,
   };
 
   static defaultProps = {
     /* buttons*/
-    chooseFile: <button />,
+    chooseFileButton: < button />,
   };
 
   constructor(props) {
     super(props);
-    const emptyFunction = () => { };
+    const emptyFunction = () => {
+    };
     const options = {
       dataType: 'json',
       timeout: 0,
@@ -54,7 +55,7 @@ export default class ReactUploadFile extends Component {
       multiple: false,
       withCredentials: false,
       beforeChoose: emptyFunction,
-      onChoose: emptyFunction,
+      didChoose: emptyFunction,
       beforeUpload: emptyFunction,
       didUpload: emptyFunction,
       uploading: emptyFunction,
@@ -81,24 +82,28 @@ export default class ReactUploadFile extends Component {
     currentXHRID: 0,
   };
 
+  componentDidMount() {
+    this.input = document.querySelector('[name=ajax-upload-file-input]')
+  }
+
   /* trigger input's click*/
   /* trigger beforeChoose*/
   commonChooseFile = (e) => {
     if (e.target.name !== 'ajax-upload-file-input') {
       const jud = this.beforeChoose();
       if (jud !== true && jud !== undefined) return;
-      e.target.childNodes[0].click();
+      this.input.click();
     }
   };
 
   /* input change event with File API */
   /* trigger chooseFile */
   commonChangeFile = (e) => {
-    this.files = e.target.files;
-    this.onChoose(this.files);
+    this.files = this.input.files;
+    this.didChoose(this.files);
 
     /* immediately upload files */
-    if (!this.props.uploadFile) {
+    if (!this.props.uploadFileButton) {
       this.commonUploadFile(e);
     }
   };
@@ -127,14 +132,15 @@ export default class ReactUploadFile extends Component {
       });
     }
 
-    const jud = this.beforeUpload(files, mill);
+    const jud = e === true ? true : this.beforeUpload(files, mill);
     if (jud !== true && jud !== undefined) {
       /* clear input's' files */
-      e.target.value = '';
+      this.input.value = '';
       return false;
     }
     if (!this.files) return false;
-    if (!this.baseUrl) throw new Error('baseUrl missing in options');
+    if (!this.baseUrl)
+      throw new Error('baseUrl missing in options');
 
     /* store info of current scope*/
     const scope = {};
@@ -159,13 +165,14 @@ export default class ReactUploadFile extends Component {
       }
     });
 
-    const baseUrl = this.baseUrl;
+    let baseUrl = this.baseUrl;
     /* url query*/
     const query = typeof this.query === 'function' ? this.query(this.files) : this.query;
     const pos = baseUrl.indexOf('?');
     let queryStr;
     if (pos > -1) {
       queryStr = baseUrl.substring(pos);
+      baseUrl = baseUrl.substring(0, pos);
     }
     if (query) {
       if (queryStr) {
@@ -173,12 +180,12 @@ export default class ReactUploadFile extends Component {
       }
       const queryArr = [];
       query._ = mill;
-      Object.keys(query).forEach(key =>
-        queryArr.push(`${key}=${query[key]}`)
+      Object.keys(query).forEach(key => queryArr.push(`${key}=${query[key]}`)
       );
       queryStr = `?${queryArr.join('&')}`;
     }
-    const targetUrl = `${baseUrl.substring(0, pos)}${queryStr}`;
+    queryStr = queryStr || ''
+    const targetUrl = `${baseUrl}${queryStr}`;
 
     /* execute ajax upload */
     const xhr = new XMLHttpRequest();
@@ -189,8 +196,7 @@ export default class ReactUploadFile extends Component {
     /* setting request headers */
     const rh = this.requestHeaders;
     if (rh) {
-      Object.keys(rh).forEach(key =>
-        xhr.setRequestHeader(key, rh[key])
+      Object.keys(rh).forEach(key => xhr.setRequestHeader(key, rh[key])
       );
     }
 
@@ -198,7 +204,10 @@ export default class ReactUploadFile extends Component {
     if (this.timeout) {
       xhr.timeout = this.timeout;
       xhr.ontimeout = () => {
-        this.uploadError({ type: 'TIMEOUTERROR', message: 'timeout' });
+        this.uploadError({
+          type: 'TIMEOUTERROR',
+          message: 'timeout'
+        });
         scope.isTimeout = false;
       };
       scope.isTimeout = false;
@@ -220,16 +229,27 @@ export default class ReactUploadFile extends Component {
         }
       } catch (err) {
         /* errors except timeout */
-        if (!scope.isTimeout) { this.uploadError({ type: 'FINISHERROR', message: err.message }); }
+        if (!scope.isTimeout) {
+          this.uploadError({
+            type: 'FINISHERROR',
+            message: err.message
+          });
+        }
       }
     };
     /* xhr error*/
     xhr.onerror = () => {
       try {
         const resp = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-        this.uploadError({ type: 'XHRERROR', message: resp });
+        this.uploadError({
+          type: 'XHRERROR',
+          message: resp
+        });
       } catch (err) {
-        this.uploadError({ type: 'XHRERROR', message: err.message });
+        this.uploadError({
+          type: 'XHRERROR',
+          message: err.message
+        });
       }
     };
 
@@ -241,7 +261,10 @@ export default class ReactUploadFile extends Component {
 
     /* save xhr's id */
     const cID = this.state.xhrList.length - 1;
-    this.setState({ currentXHRID: cID, xhrList: [...this.state.xhrList, xhr] });
+    this.setState({
+      currentXHRID: cID,
+      xhrList: [...this.state.xhrList, xhr]
+    });
 
     /* abort */
     xhr.onabort = () => this.onAbort(mill, cID);
@@ -250,25 +273,20 @@ export default class ReactUploadFile extends Component {
     this.didUpload(this.files, mill, this.state.currentXHRID);
 
     /* clear input's files */
-    e.target.value = '';
+    this.input.value = '';
 
     return true;
   }
 
   /* append text params to formData */
   appendFieldsToFormData = (formData) => {
-    const field = typeof this.paramAddToField === 'function' ? this.paramAddToField() : this.paramAddToField;
+    const field = typeof this.body === 'function' ? this.body() : this.body;
     if (field) {
       Object.keys(field).forEach((index) => {
         formData.append(index, field[index]);
       });
     }
     return formData;
-  }
-
-  /* public method. Manually trigger commonChooseFile for debug */
-  forwardChooseFile = () => {
-    this.commonChooseFile();
   }
 
   /**
@@ -282,14 +300,19 @@ export default class ReactUploadFile extends Component {
    *   length: 2
    * }
    */
-  fowardProcessFile = (func) => {
+  processFile = (func) => {
     this.files = func(this.files);
   }
 
+  /* public method. Manually trigger commonChooseFile for debug */
+  manuallyChooseFile = () => {
+    this.commonChooseFile();
+  }
+
   /* public method. Manually trigger commonUploadFile to upload files */
-  filesToUpload = (files) => {
-    this.files = files;
-    this.commonUploadFile();
+  manuallyUploadFile = (files) => {
+    this.files = files instanceof FileList ? files : this.files instanceof FileList ? this.files : this.input.files
+    this.commonUploadFile(true);
   }
 
   /* public method. Abort a xhr by id which didUpload has returned, default the last one */
@@ -302,20 +325,21 @@ export default class ReactUploadFile extends Component {
   }
 
   render() {
-    const inputProps = { accept: this.props.options.accept, multiple: this.props.options.multiple };
-    const chooseFileBtn = React.cloneElement(this.props.chooseFile, { onClick: this.commonChooseFile },
-      [(<input
-        type="file" name="ajax-upload-file-input"
-        style={{ display: 'none' }} onChange={this.commonChangeFile}
-        {...inputProps}
-        key="file-button"
-      />)]);
-    const uploadFileBtn = this.props.uploadFile && React.cloneElement(this.props.uploadFile, { onClick: this.commonUploadFile });
+    const inputProps = {
+      accept: this.props.options.accept,
+      multiple: this.props.options.multiple
+    };
+    const chooseFileButton = React.cloneElement(this.props.chooseFileButton, {
+      onClick: this.commonChooseFile
+    }, [( < input type="file" name="ajax-upload-file-input" style={ { display: 'none' } } onChange={ this.commonChangeFile } {...inputProps } key="file-button" /> )]);
+    const uploadFileButton = this.props.uploadFileButton && React.cloneElement(this.props.uploadFileButton, {
+      onClick: this.commonUploadFile
+    });
     return (
-      <div>
-        {chooseFileBtn}
-        {uploadFileBtn}
-      </div>
-    );
+      <div style={ { display: 'inline-block' } }>
+        { chooseFileButton }
+        { uploadFileButton }
+        < /div>
+      );
   }
 }
