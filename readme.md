@@ -11,6 +11,8 @@
 
 ## Maybe the Best File Upload Component for React
 
+Migrate to v2 with great stability & clear docs now! v1 has many bugs and is deprecated.
+
 ## Index ##
 
 ### Catalog ###
@@ -53,7 +55,7 @@ name | type | default | note
 baseUrl | String | '' | url
 query | Object/Function | undefined | Queries that appended after `baseUrl`. When it is a function, use its return value
 body | Object/Function | undefined | Key-values that need to add to formData besides files. When it is a function, use its return value
-dataType | String  | 'json' | Accept type of response(json or text)
+dataType | String | 'json' | Accept type of response(json or text)
 timeout | Number | 0 | Timeout of the request. Callback function `uploadError` will be triggered and an object { type: 'TIMEOUTERROR', message: 'timeout' } will be returned as the argument. Default to 0 meaning no limit
 accept | String | undefined | Limit the type (extension) of file
 multiple | Boolean | false | Allow multi-upload or not
@@ -83,29 +85,29 @@ The callback triggered after choosing.
 #### beforeUpload(files, mill) ####
 Triggered before uploading. Return true to continue or false to stop uploading.
 
-@param files {Filelist | string} The array contains files.
+@param files {Filelist} The array contains files.
 
-@param mill {long} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
+@param mill {Number} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
 
 @return {Boolean} Allow the upload action or not.
 
 #### didUpload(files, mill, xhrID) ####
 Triggered after the request is sent(xhr send | form submit).
 
-@param files {Filelist | string} The array contains files.
+@param files {Filelist | String} The array contains files.
 
-@param mill {Long} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
+@param mill {Number} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
 
-@param xhrID {Int} ID of this uploading xhr. Could be useful for `abort`.
+@param xhrID {Number} ID of this uploading xhr. Could be useful for `abort`.
 
 @return **your return**
 
 #### onAbort(mill, id) ####
 Triggered after you aborting a xhr.
 
-@param mill {Long} The time of the upload action (millisecond) that you aborted.
+@param mill {Number} The time of the upload action (millisecond) that you aborted.
 
-@param xhrID {Int} The ID of the xhr taht you aborted.
+@param xhrID {Number} The ID of the xhr taht you aborted.
 
 @return **your return**
 
@@ -119,14 +121,14 @@ It will be triggered continuously when the file is uploading in moderns.
 #### uploadSuccess(resp) ####
 Callback when upload succeed (according to the AJAX simply).
 
-@param resp {JSON | String} The response is formatted according to options.dataType.
+@param resp {String} The response is formatted according to options.dataType(json or text).
 
 @return **your return**
 
 #### uploadError ####
 Callback when error occurred (according to the AJAX simply).
 
-@param err {Error | Object} If this is an error that caught by `try`, it will be an object with `type` and `message`.
+@param err {Object} If this is an error that caught by `try`, it will be an object with `type` and `message`.
 
 @return **your return**
 
@@ -205,7 +207,7 @@ Upload files manually, use this function. BeforeUpload() won't be triggered afte
 #### abort ####
 Abort a xhr. Temporarily only works in modern browsers.
 
-@param xhrID {Int} If not passing an ID, will abort the newest one. You can get the ID of a xhr in `didUpload()`.
+@param xhrID {Number} If not passing an ID, will abort the newest one. You can get the ID of a xhr in `didUpload()`.
 
 ## Examples ##
 Simple example:
