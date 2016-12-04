@@ -100,7 +100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.state = {
 	      /* xhrs' list after start uploading files */
 	      xhrList: [],
-	      currentXHRID: 0
+	      currentXHRId: 0
 	    };
 
 	    _this.commonChooseFile = function (e) {
@@ -122,62 +122,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    _this.commonUploadFile = function (e) {
-	      if (!_this.files) return false;
-
+	      if (!_this.files || !_this.files.length) return false;
 	      if (!_this.baseUrl) {
-	        throw new Error('baseUrl missed in options!');
+	        throw new Error('baseUrl missed in options');
 	      }
 
-	      /* current timestamp in millisecond for identifying each file */
-	      var mill = _this.files.length && _this.files[0].mill || new Date().getTime();
-
-	      /* strange Filelist, make files array from DOM Filelist */
-	      /* limit the number of files */
-	      var numberLimit = typeof _this.numberLimit === 'function' ? _this.numberLimit() : _this.numberLimit;
-	      var fileLen = Math.min(_this.files.length, numberLimit);
-	      var files = [];
-	      for (var i = 0; i < fileLen; i++) {
-	        var file = _this.files[i];
-	        // path only appears in electron
-	        files.push({
-	          name: file.name,
-	          lastModified: file.lastModified,
-	          lastModifiedDate: file.lastModifiedDate,
-	          path: file.path,
-	          size: file.size,
-	          type: file.type,
-	          webkitRelativePath: file.webkitRelativePath
-	        });
-	      }
-
-	      var jud = e === true ? true : _this.beforeUpload(files, mill);
-	      if (jud !== true && jud !== undefined) {
-	        /* clear input's' files */
-	        _this.input.value = '';
+	      var jud = e === true ? true : _this.beforeUpload(_this.files);
+	      if (!jud) {
 	        return false;
 	      }
-	      /* store info of current scope*/
-	      var scope = {};
-	      /* assemble formData object */
-	      var formData = new FormData();
-	      /* append text fields' param */
-	      formData = _this.appendFieldsToFormData(formData);
-	      var fieldNameType = _typeof(_this.fileFieldName);
-	      Object.keys(_this.files).forEach(function (key) {
-	        if (key === 'length') return;
 
+	      var formData = new FormData();
+	      formData = _this.appendFieldsToFormData(formData);
+
+	      var fieldNameType = _typeof(_this.fileFieldName);
+	      var numberLimit = _this.numberLimit === 0 ? _this.files.length : Math.min(_this.files.length, _this.numberLimit);
+	      for (var i = numberLimit - 1; i >= 0; i--) {
 	        if (fieldNameType === 'function') {
-	          var _file = _this.files[key];
-	          var fileFieldName = _this.fileFieldName(_file);
-	          formData.append(fileFieldName, _file);
+	          var file = _this.files[i];
+	          var fileFieldName = _this.fileFieldName(file);
+	          formData.append(fileFieldName, file);
 	        } else if (fieldNameType === 'string') {
-	          var _file2 = _this.files[key];
-	          formData.append(_this.fileFieldName, _file2);
+	          var _file = _this.files[i];
+	          formData.append(_this.fileFieldName, _file);
 	        } else {
-	          var _file3 = _this.files[key];
-	          formData.append(_file3.name, _file3);
+	          var _file2 = _this.files[i];
+	          formData.append(_file2.name, _file2);
 	        }
-	      });
+	      }
 
 	      var baseUrl = _this.baseUrl;
 	      /* url query*/
@@ -194,7 +166,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            console.warn('Your url contains query string, which will be ignored when options.query is set.');
 	          }
 	          var queryArr = [];
-	          query._ = mill;
 	          Object.keys(query).forEach(function (key) {
 	            return queryArr.push(key + '=' + query[key]);
 	          });
@@ -204,13 +175,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      queryStr = queryStr || '';
 	      var targetUrl = '' + baseUrl + queryStr;
 
-	      /* execute ajax upload */
 	      var xhr = new XMLHttpRequest();
-	      xhr.open('POST', targetUrl, true);
+	      xhr.open('post', targetUrl, true);
 
 	      /* authorization info for cross-domain */
 	      xhr.withCredentials = _this.withCredentials;
-	      /* setting request headers */
+
 	      var rh = _this.requestHeaders;
 	      if (rh) {
 	        Object.keys(rh).forEach(function (key) {
@@ -218,82 +188,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      }
 
-	      /* handle timeout */
 	      if (_this.timeout) {
 	        xhr.timeout = _this.timeout;
-	        xhr.ontimeout = function () {
+	        xhr.addEventListener('timeout', function () {
 	          _this.uploadError({
-	            type: 'TIMEOUTERROR',
-	            message: 'timeout'
+	            type: '408',
+	            message: 'Request Timeout'
 	          });
-	          scope.isTimeout = false;
-	        };
-	        scope.isTimeout = false;
-	        setTimeout(function () {
-	          scope.isTimeout = true;
-	        }, _this.timeout);
+	        });
+	        setTimeout(function () {}, _this.timeout);
 	      }
 
-	      xhr.onreadystatechange = function () {
-	        /* xhr request finished*/
-	        try {
-	          if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
-	            var resp = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-	            _this.uploadSuccess(resp);
-	          } else if (xhr.readyState === 4) {
-	            /* xhr fail*/
-	            var _resp = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-	            _this.uploadFail(_resp);
-	          }
-	        } catch (err) {
-	          /* errors except timeout */
-	          if (!scope.isTimeout) {
-	            _this.uploadError({
-	              type: 'FINISHERROR',
-	              message: err.message
-	            });
-	          }
-	        }
-	      };
-	      /* xhr error*/
-	      xhr.onerror = function () {
-	        try {
-	          var resp = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-	          _this.uploadError({
-	            type: 'XHRERROR',
-	            message: resp
-	          });
-	        } catch (err) {
-	          _this.uploadError({
-	            type: 'XHRERROR',
-	            message: err.message
-	          });
-	        }
-	      };
+	      xhr.addEventListener('load', function () {
+	        _this.input.value = '';
+	        var res = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
+	        _this.uploadSuccess(res);
+	      });
 
-	      xhr.onprogress = xhr.upload.onprogress = function (progress) {
-	        _this.uploading(progress, mill);
-	      };
-	      console.warn(formData);
+	      xhr.addEventListener('error', function () {
+	        var err = _this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
+	        _this.uploadError({
+	          type: err.type,
+	          message: err.message
+	        });
+	      });
+
+	      xhr.addEventListener('progress', function (progress) {
+	        _this.uploading(progress);
+	      });
+
+	      var curId = _this.state.xhrList.length - 1;
+	      xhr.addEventListener('abort', function () {
+	        _this.onAbort(curId);
+	      });
+
 	      xhr.send(formData);
 
-	      /* save xhr's id */
-	      var cID = _this.state.xhrList.length - 1;
 	      _this.setState({
-	        currentXHRID: cID,
+	        currentXHRId: curId,
 	        xhrList: [].concat(_toConsumableArray(_this.state.xhrList), [xhr])
 	      });
 
-	      /* abort */
-	      xhr.onabort = function () {
-	        return _this.onAbort(mill, cID);
-	      };
-
 	      /* trigger didUpload */
-	      _this.didUpload(_this.files, mill, _this.state.currentXHRID);
-
-	      /* clear input's files */
-	      _this.input.value = '';
+	      _this.didUpload(_this.files, _this.state.currentXHRId);
 
 	      return true;
 	    };
@@ -325,7 +262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (id) {
 	        _this.state.xhrList[id].abort();
 	      } else {
-	        _this.state.xhrList[_this.state.currentXHRID].abort();
+	        _this.state.xhrList[_this.state.currentXHRId].abort();
 	      }
 	    };
 
@@ -333,7 +270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = _extends({
 	      dataType: 'json',
 	      timeout: 0,
-	      numberLimit: 10,
+	      numberLimit: 0,
 	      userAgent: window.navigator.userAgent,
 	      multiple: false,
 	      withCredentials: false,
