@@ -57,9 +57,9 @@ query | Object/Function | undefined | Queries that appended after `baseUrl`. Whe
 body | Object/Function | undefined | Key-values that need to add to formData besides files. When it is a function, use its return value
 dataType | String | 'json' | Accept type of response(json or text)
 timeout | Number | 0 | Timeout of the request. Callback function `uploadError` will be triggered and an object { type: 'TIMEOUTERROR', message: 'timeout' } will be returned as the argument. Default to 0 meaning no limit
-accept | String | undefined | Limit the type (extension) of file
+accept | String | undefined | Limit the type of file
 multiple | Boolean | false | Allow multi-upload or not
-numberLimit | Number/Function | 10 | Limit how much file that user can choose in multi-upload case.User can still choose but `ReactUploadFile` will filter
+numberLimit | Number | 0 | Limit how many files can be uploaded a time, 0 means no limit.
 fileFieldName | String/Function | undefined | Determine the field name of file. If it is a function, which will receive each file object as argument, use its return value. Default to file's name
 withCredentials | Boolean | false | Same as 'xhr.withCredentials'
 requestHeaders | Object | undefined | Key-values that will be set using 'xhr.setRequestHeader(key, value)'
@@ -82,32 +82,26 @@ The callback triggered after choosing.
 
 @return **your return**
 
-#### beforeUpload(files, mill) ####
+#### beforeUpload(files) ####
 Triggered before uploading. Return true to continue or false to stop uploading.
 
 @param files {Filelist} The array contains files.
 
-@param mill {Number} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
-
 @return {Boolean} Allow the upload action or not.
 
-#### didUpload(files, mill, xhrID) ####
+#### didUpload(files, xhrId) ####
 Triggered after the request is sent(xhr send | form submit).
 
 @param files {Filelist | String} The array contains files.
 
-@param mill {Number} The time of the upload action (millisecond). If the File instance has the `mill` property it will be the same as it.
-
-@param xhrID {Number} ID of this uploading xhr. Could be useful for `abort`.
+@param xhrId {Number} Id of this uploading xhr. Could be useful for `abort`.
 
 @return **your return**
 
-#### onAbort(mill, id) ####
+#### onAbort(xhrId) ####
 Triggered after you aborting a xhr.
 
-@param mill {Number} The time of the upload action (millisecond) that you aborted.
-
-@param xhrID {Number} The ID of the xhr taht you aborted.
+@param xhrId {Number} Id of the xhr aborted.
 
 @return **your return**
 
@@ -118,24 +112,24 @@ It will be triggered continuously when the file is uploading in moderns.
 
 @return **your return**
 
-#### uploadSuccess(resp) ####
-Callback when upload succeed (according to the AJAX simply).
+#### uploadSuccess(res) ####
+Callback when upload succeed (according to the ajax simply).
 
-@param resp {String} The response is formatted according to options.dataType(json or text).
+@param res {String} The response is formatted according to options.dataType(json or text).
 
 @return **your return**
 
 #### uploadError ####
-Callback when error occurred (according to the AJAX simply).
+Callback when error occurred (according to the ajax simply).
 
 @param err {Object} If this is an error that caught by `try`, it will be an object with `type` and `message`.
 
 @return **your return**
 
 #### uploadFail ####
-Callback when upload failed (according to the AJAX simply).
+Callback when upload failed (according to the ajax simply).
 
-@param resp {String} Message of it.
+@param res {String} Message of it.
 
 @return **your return**
 
@@ -183,31 +177,31 @@ render() {
 }
 ```
 
-#### processFile ####
+#### processFile(func) ####
 Process files with customed function.
 
-@param func {Function}
+@param func {Function} Receive filelist as param
 
 @return null
 
-#### manuallyChooseFile ####
+#### manuallyChooseFile() ####
 Do the same as clicking `chooseFileButton`. Only support modern browsers.
 
 @param null
 
 @return null
 
-#### manuallyUploadFile ####
+#### manuallyUploadFile(files) ####
 Upload files manually, use this function. BeforeUpload() won't be triggered after the invoke of this function.
 
 @param files {Filelist} filelist that need to be uploaded, default to the filelist of chosen files.
 
 @return null
 
-#### abort ####
+#### abort(xhrId) ####
 Abort a xhr. Temporarily only works in modern browsers.
 
-@param xhrID {Number} If not passing an ID, will abort the newest one. You can get the ID of a xhr in `didUpload()`.
+@param xhrId {Number} If not passing an id, will abort the newest one. You can get it in `didUpload()`.
 
 ## Examples ##
 Simple example:
@@ -277,7 +271,7 @@ options: {
   didChoose: (files) => {
     console.log('you choose', typeof files == 'string' ? files : files[0].name);
   },
-  beforeUpload: (files, mill) => {
+  beforeUpload: (files) => {
     if (typeof files === 'string') return true;
     if (files[0].size < 1024 * 1024 * 20) {
       files[0].mill = mill;
@@ -285,7 +279,7 @@ options: {
     }
     return false;
   },
-  didUpload: (files, mill) => {
+  didUpload: (files) => {
     console.log('you just uploaded', typeof files === 'string' ? files : files[0].name);
   },
   uploading: (progress) => {

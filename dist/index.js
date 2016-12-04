@@ -122,6 +122,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    _this.commonUploadFile = function (e) {
+	      if (!_this.files) return false;
+
+	      if (!_this.baseUrl) {
+	        throw new Error('baseUrl missed in options!');
+	      }
+
 	      /* current timestamp in millisecond for identifying each file */
 	      var mill = _this.files.length && _this.files[0].mill || new Date().getTime();
 
@@ -150,9 +156,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.input.value = '';
 	        return false;
 	      }
-	      if (!_this.files) return false;
-	      if (!_this.baseUrl) throw new Error('baseUrl missing in options');
-
 	      /* store info of current scope*/
 	      var scope = {};
 	      /* assemble formData object */
@@ -271,7 +274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      xhr.onprogress = xhr.upload.onprogress = function (progress) {
 	        _this.uploading(progress, mill);
 	      };
-
+	      console.warn(formData);
 	      xhr.send(formData);
 
 	      /* save xhr's id */
@@ -314,7 +317,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    _this.manuallyUploadFile = function (files) {
-	      _this.files = files instanceof FileList ? files : _this.files instanceof FileList ? _this.files : _this.input.files;
+	      _this.files = files && files.length ? files : _this.files;
 	      _this.commonUploadFile(true);
 	    };
 

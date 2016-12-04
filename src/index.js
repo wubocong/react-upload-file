@@ -50,7 +50,7 @@ export default class ReactUploadFile extends Component {
     const options = {
       dataType: 'json',
       timeout: 0,
-      numberLimit: 10,
+      numberLimit: 0,
       userAgent: window.navigator.userAgent,
       multiple: false,
       withCredentials: false,
@@ -79,7 +79,7 @@ export default class ReactUploadFile extends Component {
   state = {
     /* xhrs' list after start uploading files */
     xhrList: [],
-    currentXHRID: 0,
+    currentXHRId: 0,
   };
 
   componentDidMount() {
@@ -110,61 +110,35 @@ export default class ReactUploadFile extends Component {
 
   /* execute upload */
   commonUploadFile = (e) => {
-    /* current timestamp in millisecond for identifying each file */
-    const mill = (this.files.length && this.files[0].mill) || (new Date()).getTime();
-
-    /* strange Filelist, make files array from DOM Filelist */
-    /* limit the number of files */
-    const numberLimit = typeof this.numberLimit === 'function' ? this.numberLimit() : this.numberLimit;
-    const fileLen = Math.min(this.files.length, numberLimit);
-    const files = [];
-    for (let i = 0; i < fileLen; i++) {
-      const file = this.files[i];
-      // path only appears in electron
-      files.push({
-        name: file.name,
-        lastModified: file.lastModified,
-        lastModifiedDate: file.lastModifiedDate,
-        path: file.path,
-        size: file.size,
-        type: file.type,
-        webkitRelativePath: file.webkitRelativePath,
-      });
+    if (!this.files || !this.files.length) return false;
+    if (!this.baseUrl) {
+      throw new Error('baseUrl missed in options');
     }
 
-    const jud = e === true ? true : this.beforeUpload(files, mill);
-    if (jud !== true && jud !== undefined) {
-      /* clear input's' files */
-      this.input.value = '';
+    const jud = e === true ? true : this.beforeUpload(this.files);
+    if (!jud) {
       return false;
     }
-    if (!this.files) return false;
-    if (!this.baseUrl)
-      throw new Error('baseUrl missing in options');
 
-    /* store info of current scope*/
-    const scope = {};
-    /* assemble formData object */
     let formData = new FormData();
-    /* append text fields' param */
     formData = this.appendFieldsToFormData(formData);
-    const fieldNameType = typeof this.fileFieldName;
-    Object.keys(this.files).forEach((key) => {
-      if (key === 'length') return;
 
+    const fieldNameType = typeof this.fileFieldName;
+    const numberLimit = this.numberLimit === 0 ? this.files.length : Math.min(this.files.length, this.numberLimit);
+    for (let i = numberLimit - 1; i >= 0; i--) {
       if (fieldNameType === 'function') {
-        const file = this.files[key];
+        const file = this.files[i];
         const fileFieldName = this.fileFieldName(file);
         formData.append(fileFieldName, file);
       } else if (fieldNameType === 'string') {
-        const file = this.files[key];
+        const file = this.files[i];
         formData.append(this.fileFieldName, file);
       } else {
-        const file = this.files[key];
+        const file = this.files[i];
         formData.append(file.name, file);
       }
-    });
-
+    }
+    
     let baseUrl = this.baseUrl;
     /* url query*/
     const query = typeof this.query === 'function' ? this.query(this.files) : this.query;
@@ -179,7 +153,6 @@ export default class ReactUploadFile extends Component {
         console.warn('Your url contains query string, which will be ignored when options.query is set.');
       }
       const queryArr = [];
-      query._ = mill;
       Object.keys(query).forEach(key => queryArr.push(`${key}=${query[key]}`)
       );
       queryStr = `?${queryArr.join('&')}`;
@@ -187,93 +160,61 @@ export default class ReactUploadFile extends Component {
     queryStr = queryStr || ''
     const targetUrl = `${baseUrl}${queryStr}`;
 
-    /* execute ajax upload */
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', targetUrl, true);
+    xhr.open('post', targetUrl, true);
 
     /* authorization info for cross-domain */
     xhr.withCredentials = this.withCredentials;
-    /* setting request headers */
+
     const rh = this.requestHeaders;
     if (rh) {
-      Object.keys(rh).forEach(key => xhr.setRequestHeader(key, rh[key])
-      );
+      Object.keys(rh).forEach(key => xhr.setRequestHeader(key, rh[key]));
     }
 
-    /* handle timeout */
     if (this.timeout) {
       xhr.timeout = this.timeout;
-      xhr.ontimeout = () => {
+      xhr.addEventListener('timeout', () => {
         this.uploadError({
-          type: 'TIMEOUTERROR',
-          message: 'timeout'
+          type: '408',
+          message: 'Request Timeout',
         });
-        scope.isTimeout = false;
-      };
-      scope.isTimeout = false;
+      });
       setTimeout(() => {
-        scope.isTimeout = true;
       }, this.timeout);
     }
 
-    xhr.onreadystatechange = () => {
-      /* xhr request finished*/
-      try {
-        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 400) {
-          const resp = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-          this.uploadSuccess(resp);
-        } else if (xhr.readyState === 4) {
-          /* xhr fail*/
-          const resp = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-          this.uploadFail(resp);
-        }
-      } catch (err) {
-        /* errors except timeout */
-        if (!scope.isTimeout) {
-          this.uploadError({
-            type: 'FINISHERROR',
-            message: err.message
-          });
-        }
-      }
-    };
-    /* xhr error*/
-    xhr.onerror = () => {
-      try {
-        const resp = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
-        this.uploadError({
-          type: 'XHRERROR',
-          message: resp
-        });
-      } catch (err) {
-        this.uploadError({
-          type: 'XHRERROR',
-          message: err.message
-        });
-      }
-    };
+    xhr.addEventListener('load', () => {
+      this.input.value = '';
+      const res = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
+      this.uploadSuccess(res);
+    });
 
-    xhr.onprogress = xhr.upload.onprogress = (progress) => {
-      this.uploading(progress, mill);
-    };
+    xhr.addEventListener('error', () => {
+      const err = this.dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText;
+      this.uploadError({
+        type: err.type,
+        message: err.message,
+      });
+    });
+
+    xhr.addEventListener('progress', (progress) => {
+      this.uploading(progress);
+    });
+
+    const curId = this.state.xhrList.length - 1;
+    xhr.addEventListener('abort', () => {
+      this.onAbort(curId)
+    });
 
     xhr.send(formData);
 
-    /* save xhr's id */
-    const cID = this.state.xhrList.length - 1;
     this.setState({
-      currentXHRID: cID,
+      currentXHRId: curId,
       xhrList: [...this.state.xhrList, xhr]
     });
 
-    /* abort */
-    xhr.onabort = () => this.onAbort(mill, cID);
-
     /* trigger didUpload */
-    this.didUpload(this.files, mill, this.state.currentXHRID);
-
-    /* clear input's files */
-    this.input.value = '';
+    this.didUpload(this.files, this.state.currentXHRId);
 
     return true;
   }
@@ -311,7 +252,7 @@ export default class ReactUploadFile extends Component {
 
   /* public method. Manually trigger commonUploadFile to upload files */
   manuallyUploadFile = (files) => {
-    this.files = files instanceof FileList ? files : this.files instanceof FileList ? this.files : this.input.files
+    this.files = files && files.length ? files : this.files
     this.commonUploadFile(true);
   }
 
@@ -320,7 +261,7 @@ export default class ReactUploadFile extends Component {
     if (id) {
       this.state.xhrList[id].abort();
     } else {
-      this.state.xhrList[this.state.currentXHRID].abort();
+      this.state.xhrList[this.state.currentXHRId].abort();
     }
   }
 
