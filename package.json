@@ -1,6 +1,6 @@
 {
   "name": "react-upload-file",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "Structure-only, ui-customizable and modern react file upload component for IE9+",
   "main": "dist/index.min.js",
   "engines": {
@@ -42,8 +42,8 @@
     "eslint": "^3.11.1",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-import-resolver-webpack": "^0.7.0",
-    "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "^3.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-prefer-object-spread": "^1.1.0",
     "eslint-plugin-react": "^6.7.1",
     "jsx-loader": "^0.13.2",
