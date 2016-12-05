@@ -1,13 +1,12 @@
 {
   "name": "react-upload-file",
   "version": "2.0.0-beta.4",
-  "description": "Structure-only, ui-customizable and modern react file upload component for IE9+",
+  "description": "Structure-Only, UI-Customizable and Modern file upload component for IE9+",
   "main": "dist/index.min.js",
   "engines": {
     "node": ">=4.0.0"
   },
   "scripts": {
-    "test": "npm run build",
     "build": "webpack"
   },
   "keywords": [

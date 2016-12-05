@@ -11,8 +11,7 @@
 
 ## Maybe the Best File Upload Component for React
 
-Migrate to v2 with great stability & clear docs now! v1 has many bugs and is deprecated.
-
+Ready for production usage! Migrate to v2 now since v1 has many bugs and is deprecated.
 ## Index ##
 
 ### Catalog ###
@@ -30,7 +29,7 @@ Migrate to v2 with great stability & clear docs now! v1 has many bugs and is dep
 
 
 ## Introduce ##
-A **structure-only**, **ui-customizable** and **modern** file upload component of React which support IE10+ and basically support IE9, requiring node4+.
+A **Structure-Only**, **UI-Customizable** and **Modern** file upload component for React which support IE10+ and basically support IE9, requiring node4+.
 
 ## Installation ##
 `npm install react-upload-file -S`
