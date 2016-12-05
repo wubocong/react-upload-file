@@ -125,13 +125,6 @@ Callback when error occurred (according to the ajax simply).
 
 @return **your return**
 
-#### uploadFail ####
-Callback when upload failed (according to the ajax simply).
-
-@param res {String} Message of it.
-
-@return **your return**
-
 ### Custom Buttons ###
 You can display two of your custom buttons by setting two attributes of `ReactUploadFile` as mentioned before.
 
@@ -289,9 +282,6 @@ options: {
   },
   uploadError: (err) => {
     alert(err.message);
-  },
-  uploadFail: (resp) => {
-    alert(resp);
   }
 }
 
