@@ -83,7 +83,7 @@ export default class ReactUploadFile extends Component {
   };
 
   componentDidMount() {
-    this.input = document.querySelector('[name=ajax-upload-file-input]')
+    this.input = document.querySelector('[name=ajax-upload-file-input]');
   }
 
   /* trigger input's click*/
@@ -138,7 +138,7 @@ export default class ReactUploadFile extends Component {
         formData.append(file.name, file);
       }
     }
-    
+
     let baseUrl = this.baseUrl;
     /* url query*/
     const query = typeof this.query === 'function' ? this.query(this.files) : this.query;
@@ -157,7 +157,7 @@ export default class ReactUploadFile extends Component {
       );
       queryStr = `?${queryArr.join('&')}`;
     }
-    queryStr = queryStr || ''
+    queryStr = queryStr || '';
     const targetUrl = `${baseUrl}${queryStr}`;
 
     const xhr = new XMLHttpRequest();
@@ -203,7 +203,7 @@ export default class ReactUploadFile extends Component {
 
     const curId = this.state.xhrList.length - 1;
     xhr.addEventListener('abort', () => {
-      this.onAbort(curId)
+      this.onAbort(curId);
     });
 
     xhr.send(formData);
@@ -252,7 +252,7 @@ export default class ReactUploadFile extends Component {
 
   /* public method. Manually trigger commonUploadFile to upload files */
   manuallyUploadFile = (files) => {
-    this.files = files && files.length ? files : this.files
+    this.files = files && files.length ? files : this.files;
     this.commonUploadFile(true);
   }
 
@@ -272,15 +272,15 @@ export default class ReactUploadFile extends Component {
     };
     const chooseFileButton = React.cloneElement(this.props.chooseFileButton, {
       onClick: this.commonChooseFile
-    }, [( < input type="file" name="ajax-upload-file-input" style={ { display: 'none' } } onChange={ this.commonChangeFile } {...inputProps } key="file-button" /> )]);
+    }, [(< input type="file" name="ajax-upload-file-input" style={{ display: 'none' }} onChange={this.commonChangeFile} {...inputProps} key="file-button" />)]);
     const uploadFileButton = this.props.uploadFileButton && React.cloneElement(this.props.uploadFileButton, {
       onClick: this.commonUploadFile
     });
     return (
-      <div style={ { display: 'inline-block' } }>
+      <div style={{ display: 'inline-block' }}>
         { chooseFileButton }
         { uploadFileButton }
-        < /div>
-      );
+      < /div>
+    );
   }
 }

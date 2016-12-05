@@ -9,28 +9,29 @@
   "extends": "airbnb",
   "env": {
     "browser": true,
-    "mocha": true,
     "node": true
   },
   "rules": {
     "comma-dangle": 0,
     "no-use-before-define": 0,
-    "max-len": 1,
+    "max-len": 0,
     "no-plusplus": 0,
     "class-methods-use-this": 0,
     "import/no-unresolved": 2,
-    "import/no-extraneous-dependencies": 0,
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "import/no-extraneous-dependencies": 2,
+    "react/jsx-filename-extension": [2, {
+      "extensions": [".js", ".jsx"]
+    }],
     "react/forbid-prop-types": 0,
     "react/no-unused-prop-types": 0,
     "react/jsx-closing-bracket-location": 1,
-    "prefer-object-spread/prefer-object-spread": 1,
-    "no-param-reassign": 0
+    "prefer-object-spread/prefer-object-spread": 1
   },
   "plugins": [
     "import",
     "react",
-    "prefer-object-spread"
+    "prefer-object-spread",
+    "jsx-a11y"
   ],
   "settings": {
     "import/resolver": {
