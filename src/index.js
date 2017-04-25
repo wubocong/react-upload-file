@@ -3,6 +3,7 @@
  */
 
 import React, { PropTypes, Component } from 'react';
+import ReactDOM from 'react-dom';
 
 export default class ReactUploadFile extends Component {
   static propTypes = {
@@ -82,8 +83,8 @@ export default class ReactUploadFile extends Component {
     currentXHRId: 0,
   };
 
-  componentDidMount() {
-    this.input = document.querySelector('[name=ajax-upload-file-input]');
+  componentDidMount = () => {
+    this.input = ReactDOM.findDOMNode(this).querySelector('[name=ajax-upload-file-input]');
   }
 
   /* trigger input's click*/
