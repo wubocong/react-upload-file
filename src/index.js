@@ -281,7 +281,7 @@ export default class ReactUploadFile extends Component {
       <div style={{ display: 'inline-block' }}>
         { chooseFileButton }
         { uploadFileButton }
-      < /div>
+      </div>
     );
   }
 }
