@@ -8,10 +8,18 @@
 [![License](https://img.shields.io/github/license/wubocong/react-upload-file.svg)](https://spdx.org/licenses/MIT)
 [![Code Climate](https://codeclimate.com/github/wubocong/react-upload-file/badges/gpa.svg)](https://codeclimate.com/github/wubocong/react-upload-file)
 [![Test Coverage](https://codeclimate.com/github/wubocong/react-upload-file/badges/coverage.svg)](https://codeclimate.com/github/wubocong/react-upload-file/coverage)
+[![PR Welcome](https://img.shields.io/badge/PR-welcome-green.svg)](https://github.com/wubocong/react-upload-file/pull/new/master)
+[![Pull Request](https://img.shields.io/github/issues-pr-raw/wubocong/react-upload-file.svg)](https://github.com/wubocong/react-upload-file/pulls)
+[![Pull Request Closed](https://img.shields.io/github/issues-pr-closed-raw/wubocong/react-upload-file.svg)](https://github.com/wubocong/react-upload-file/pulls?q=is%3Apr+is%3Aclosed)
+
+## Welcome Pull Request!!!
+
+The author is not available to maintain this project hence any PRs will be seriously welcomed!
 
 ## Maybe the Best File Upload Component for React
 
 Ready for production usage! Migrate to v2 now since v1 has many bugs and is deprecated.
+
 ## Index ##
 
 ### Catalog ###
