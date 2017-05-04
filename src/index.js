@@ -247,8 +247,8 @@ export default class ReactUploadFile extends Component {
   }
 
   /* public method. Manually trigger commonChooseFile for debug */
-  manuallyChooseFile = () => {
-    this.commonChooseFile();
+  manuallyChooseFile = (e) => {
+    this.commonChooseFile(e);
   }
 
   /* public method. Manually trigger commonUploadFile to upload files */
