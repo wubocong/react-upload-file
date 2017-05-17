@@ -28,7 +28,7 @@ Ready for production usage! Migrate to v2 now since v1 has many bugs and is depr
   * [Best Practices](#best-practices)
 * [API](#api)
   * [Basic Options](#basic-options)
-  * [Life Circle Functions](#life-circle-functions)
+  * [Lifecycle Functions](#lifecycle-functions)
   * [Custom Buttons](#custom-buttons)
   * [Component Functions](#component-functions)
 * [Examples](#examples)
@@ -72,7 +72,7 @@ withCredentials | Boolean | false | Same as 'xhr.withCredentials'
 requestHeaders | Object | undefined | Key-values that will be set using 'xhr.setRequestHeader(key, value)'
 userAgent | String | window.navigator.userAgent | Used to set the userAgent string with serverside rendering isomorphic applications(required when rendering on the server)
 
-### Life Circle Functions ###
+### Lifecycle Functions ###
 Also set as the properties of options.
 
 #### beforeChoose() ####
