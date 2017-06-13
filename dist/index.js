@@ -272,12 +272,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
-	    var emptyFunction = function emptyFunction() {};
+	    var emptyFunction = function emptyFunction(f) {
+	      return f;
+	    };
 	    var options = _extends({
 	      dataType: 'json',
 	      timeout: 0,
 	      numberLimit: 0,
-	      userAgent: window.navigator.userAgent,
+	      userAgent: window ? window.navigator.userAgent : '',
 	      multiple: false,
 	      withCredentials: false,
 	      beforeChoose: emptyFunction,
@@ -347,7 +349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	      var chooseFileButton = _react2.default.cloneElement(this.props.chooseFileButton, {
 	        onClick: this.commonChooseFile
-	      }, [_react2.default.createElement('input', _extends({ type: 'file', name: 'ajax-upload-file-input', style: { display: 'none' }, onChange: this.commonChangeFile }, inputProps, { key: 'file-button' }))]);
+	      }, [].concat(_toConsumableArray(this.props.chooseFileButton.props.children ? [this.props.chooseFileButton.props.children] : []), [_react2.default.createElement('input', _extends({ type: 'file', name: 'ajax-upload-file-input', style: { display: 'none' }, onChange: this.commonChangeFile }, inputProps, { key: 'file-button' }))]));
 	      var uploadFileButton = this.props.uploadFileButton && _react2.default.cloneElement(this.props.uploadFileButton, {
 	        onClick: this.commonUploadFile
 	      });
@@ -397,7 +399,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	ReactUploadFile.defaultProps = {
 	  /* buttons*/
-	  chooseFileButton: _react2.default.createElement('button', null)
+	  chooseFileButton: _react2.default.createElement(
+	    'button',
+	    null,
+	    'Select File'
+	  )
 	};
 	exports.default = ReactUploadFile;
 
@@ -11230,6 +11236,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return emptyFunction.thatReturnsNull;
 	    }
 
+	    for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+	      var checker = arrayOfTypeCheckers[i];
+	      if (typeof checker !== 'function') {
+	        warning(false, 'Invalid argument supplid to oneOfType. Expected an array of check functions, but ' + 'received %s at index %s.', getPostfixForTypeWarning(checker), i);
+	        return emptyFunction.thatReturnsNull;
+	      }
+	    }
+
 	    function validate(props, propName, componentName, location, propFullName) {
 	      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
 	        var checker = arrayOfTypeCheckers[i];
@@ -11362,6 +11376,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // This handles more types than `getPropType`. Only used for error messages.
 	  // See `createPrimitiveTypeChecker`.
 	  function getPreciseType(propValue) {
+	    if (typeof propValue === 'undefined' || propValue === null) {
+	      return '' + propValue;
+	    }
 	    var propType = getPropType(propValue);
 	    if (propType === 'object') {
 	      if (propValue instanceof Date) {
@@ -11371,6 +11388,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    return propType;
+	  }
+
+	  // Returns a string that is postfixed to a warning about an invalid type.
+	  // For example, "undefined" or "of type array"
+	  function getPostfixForTypeWarning(value) {
+	    var type = getPreciseType(value);
+	    switch (type) {
+	      case 'array':
+	      case 'object':
+	        return 'an ' + type;
+	      case 'boolean':
+	      case 'date':
+	      case 'regexp':
+	        return 'a ' + type;
+	      default:
+	        return type;
+	    }
 	  }
 
 	  // Returns class name of the object, if any.
