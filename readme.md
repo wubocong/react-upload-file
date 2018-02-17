@@ -12,9 +12,9 @@
 [![Pull Request](https://img.shields.io/github/issues-pr-raw/wubocong/react-upload-file.svg)](https://github.com/wubocong/react-upload-file/pulls)
 [![Pull Request Closed](https://img.shields.io/github/issues-pr-closed-raw/wubocong/react-upload-file.svg)](https://github.com/wubocong/react-upload-file/pulls?q=is%3Apr+is%3Aclosed)
 
-## Welcome Pull Request!!!
+# 14 Days' Life!!!
 
-The author is not available to maintain this project hence any PRs will be seriously welcomed!
+The author is not available to maintain this project hence any experienced developer is welcomed for future development. If no one wants to take charge, this repo will be deleted on **March 1st, 2018**.
 
 ## Maybe the Best File Upload Component for React
 
